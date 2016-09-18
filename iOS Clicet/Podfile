@@ -1,0 +1,9 @@
+use_frameworks!
+target 'Timi' do
+  pod 'FMDB'
+  pod 'SnapKit'
+  pod 'AKPickerView-Swift'
+  pod 'RESideMenu'
+  pod 'JSAnimatedImagesView'
+  pod 'AJWValidator'
+end

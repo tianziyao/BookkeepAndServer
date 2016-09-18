@@ -1,0 +1,6 @@
+framework module AJWValidator {
+  umbrella header "AJWValidator-umbrella.h"
+
+  export *
+  module * { export * }
+}

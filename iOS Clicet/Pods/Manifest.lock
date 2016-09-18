@@ -1,0 +1,32 @@
+PODS:
+  - AJWValidator (0.0.8)
+  - AKPickerView-Swift (1.0.1)
+  - FMDB (2.6.2):
+    - FMDB/standard (= 2.6.2)
+  - FMDB/standard (2.6.2)
+  - JSAnimatedImagesView (1.0.0):
+    - MSWeakTimer (~> 1.0)
+  - MSWeakTimer (1.1.0)
+  - RESideMenu (4.0.7)
+  - SnapKit (0.22.0)
+
+DEPENDENCIES:
+  - AJWValidator
+  - AKPickerView-Swift
+  - FMDB
+  - JSAnimatedImagesView
+  - RESideMenu
+  - SnapKit
+
+SPEC CHECKSUMS:
+  AJWValidator: ed00557b9cdcc38a8216aa9ddbd76b4eadb73615
+  AKPickerView-Swift: 8509d472bb257649383c276506334a7373d3cb33
+  FMDB: 854a0341b4726e53276f2a8996f06f1b80f9259a
+  JSAnimatedImagesView: d5c5f561280171ce13f1f08ba9834c47a1f27bfc
+  MSWeakTimer: 9426150f933b80ed3acf3f6d228e4b61f0e303c8
+  RESideMenu: f24c508404b49c667344c54aba7e590883533958
+  SnapKit: 0dd2fd157330f1ea11fd84da13e6be8a7a22bae0
+
+PODFILE CHECKSUM: 6835a81de67ed8ff3348453b46227990afb36c0d
+
+COCOAPODS: 1.0.1

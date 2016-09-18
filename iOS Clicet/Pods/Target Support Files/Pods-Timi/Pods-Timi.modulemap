@@ -1,0 +1,6 @@
+framework module Pods_Timi {
+  umbrella header "Pods-Timi-umbrella.h"
+
+  export *
+  module * { export * }
+}
