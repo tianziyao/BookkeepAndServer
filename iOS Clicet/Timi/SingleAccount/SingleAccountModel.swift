@@ -20,7 +20,7 @@ class SingleAccountModel: NSObject {
     var accountTitle:String
     
     //MARK: - properties (private)
-    private let lastCellInterval:NSTimeInterval = NSDate().timeIntervalSince1970 + 86400
+    fileprivate let lastCellInterval:TimeInterval = Date().timeIntervalSince1970 + 86400
     
     //MARK: - init (internal)
     init(initDBName:String, accountTitle:String){
@@ -44,9 +44,9 @@ class SingleAccountModel: NSObject {
         var tmpItemAccounts:[AccountItem] = []
         for sourceItem in itemAccounts {
             //1、比较大小
-            let showDate = compareDate(NSTimeInterval(sourceItem.date), lastInterval: lastInterval)
+            let showDate = compareDate(TimeInterval(sourceItem.date), lastInterval: lastInterval)
             //2、保存当前的日期值到lastCellInterval
-            lastInterval = NSTimeInterval(sourceItem.date)
+            lastInterval = TimeInterval(sourceItem.date)
             //3、修改原数据
             sourceItem.dateString = showDate
             sourceItem.dayCost = sourceItem.money
@@ -85,9 +85,9 @@ class SingleAccountModel: NSObject {
         self.totalCost = totalCost
     }
     
-    private func compareDate(currentInterval:NSTimeInterval, lastInterval:NSTimeInterval) -> String{
-        let currentCom = NSDate.intervalToDateComponent(currentInterval)
-        let lastCom = NSDate.intervalToDateComponent(lastInterval)
+    fileprivate func compareDate(_ currentInterval:TimeInterval, lastInterval:TimeInterval) -> String{
+        let currentCom = Date.intervalToDateComponent(currentInterval)
+        let lastCom = Date.intervalToDateComponent(lastInterval)
         let yearEqual = currentCom.year == lastCom.year
         let monthEqual = currentCom.month == lastCom.month
         let dayEqual = currentCom.day == lastCom.day

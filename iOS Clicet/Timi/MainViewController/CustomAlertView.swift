@@ -8,7 +8,7 @@
 
 import UIKit
 
-private let ScreenHeightRatio = UIScreen.mainScreen().bounds.height / 480
+private let ScreenHeightRatio = UIScreen.main.bounds.height / 480
 
 private let BgMarginLeft:CGFloat = 30
 private let BgMarginRight:CGFloat = 30
@@ -29,7 +29,7 @@ class CustomAlertView: UIView {
     var sureBlock:((String, String)->Void)?
     
     //初始化
-    private var titleText:UITextField?
+    fileprivate var titleText:UITextField?
     //标题
     var title:String{
         get{
@@ -57,7 +57,7 @@ class CustomAlertView: UIView {
         }
         set(newValue){
             for i in 0...imageArray.count - 1{
-                if (newValue.rangeOfString("\(i)") != nil){
+                if (newValue.range(of: "\(i)") != nil){
                     imageArray[i].showFlag = true
                 }
                 else{
@@ -75,22 +75,22 @@ class CustomAlertView: UIView {
         setup(frame)
     }
     
-    private func setup(frame: CGRect){
+    fileprivate func setup(_ frame: CGRect){
         
         let bgWidth = frame.width - BgMarginLeft - BgMarginRight
-        let bgView = UIView(frame: CGRectMake(BgMarginLeft, BgMarginTop, bgWidth, BgHeight))
-        bgView.backgroundColor = UIColor.whiteColor()
+        let bgView = UIView(frame: CGRect(x: BgMarginLeft, y: BgMarginTop, width: bgWidth, height: BgHeight))
+        bgView.backgroundColor = UIColor.white
         bgView.layer.cornerRadius = 10
         
         //账本标题
-        let titleText = UITextField(frame: CGRectMake(0, 0, bgWidth, TitleTextHeight))
+        let titleText = UITextField(frame: CGRect(x: 0, y: 0, width: bgWidth, height: TitleTextHeight))
         titleText.font = UIFont(name: "Courier", size: 20)
         titleText.placeholder = "新建账本"
-        titleText.textAlignment = .Center
+        titleText.textAlignment = .center
         self.titleText = titleText
         
         //分割线
-        let topSepLine = UIView(frame: CGRectMake(0, TitleTextHeight, bgWidth, 1))
+        let topSepLine = UIView(frame: CGRect(x: 0, y: TitleTextHeight, width: bgWidth, height: 1))
         topSepLine.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.8)
         
         //背景图
@@ -98,12 +98,12 @@ class CustomAlertView: UIView {
         var imageArray:[FlagBtn] = []
         for i in 1...5 {
             let imageX = ImageMarginLeft * CGFloat(i)  + ImageWidth * CGFloat(i - 1)
-            let frame = CGRectMake(imageX, ImageMarginTop + TitleTextHeight, ImageWidth, ImageHeight)
+            let frame = CGRect(x: imageX, y: ImageMarginTop + TitleTextHeight, width: ImageWidth, height: ImageHeight)
             let image = FlagBtn(frame: frame)
             image.layer.cornerRadius = 5
             image.tag = i - 1
-            image.setImage(UIImage(named: "book_cover_\(i - 1)"), forState: .Normal)
-            image.addTarget(self, action: #selector(CustomAlertView.chooseImage(_:)), forControlEvents: .TouchUpInside)
+            image.setImage(UIImage(named: "book_cover_\(i - 1)"), for: UIControlState())
+            image.addTarget(self, action: #selector(CustomAlertView.chooseImage(_:)), for: .touchUpInside)
             
             imageArray.append(image)
             bgView.addSubview(image)
@@ -111,23 +111,23 @@ class CustomAlertView: UIView {
         self.imageArray = imageArray
         
         //分割线
-        let botmSepLine = UIView(frame: CGRectMake(0, TitleTextHeight + ImageViewHeight , bgWidth, 1))
+        let botmSepLine = UIView(frame: CGRect(x: 0, y: TitleTextHeight + ImageViewHeight , width: bgWidth, height: 1))
         botmSepLine.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.8)
         
         //按钮
-        let cancelBtn = UIButton(frame: CGRectMake(0, TitleTextHeight + ImageViewHeight, bgWidth / 2 - 1, BtnHeight))
-        cancelBtn.setTitle("取消", forState: .Normal)
+        let cancelBtn = UIButton(frame: CGRect(x: 0, y: TitleTextHeight + ImageViewHeight, width: bgWidth / 2 - 1, height: BtnHeight))
+        cancelBtn.setTitle("取消", for: UIControlState())
         cancelBtn.titleLabel?.font = UIFont(name: "Courier", size: 20)
-        cancelBtn.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        cancelBtn.addTarget(self, action: #selector(CustomAlertView.cancelPress(_:)), forControlEvents: .TouchUpInside)
-        let btnSepLine = UIView(frame: CGRectMake(bgWidth / 2 - 1, TitleTextHeight + ImageViewHeight, 1, BtnHeight))
+        cancelBtn.setTitleColor(UIColor.black, for: UIControlState())
+        cancelBtn.addTarget(self, action: #selector(CustomAlertView.cancelPress(_:)), for: .touchUpInside)
+        let btnSepLine = UIView(frame: CGRect(x: bgWidth / 2 - 1, y: TitleTextHeight + ImageViewHeight, width: 1, height: BtnHeight))
         btnSepLine.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.8)
         
-        let sureBtn = UIButton(frame: CGRectMake(bgWidth / 2, TitleTextHeight + ImageViewHeight, bgWidth / 2, BtnHeight))
-        sureBtn.setTitle("确定", forState: .Normal)
+        let sureBtn = UIButton(frame: CGRect(x: bgWidth / 2, y: TitleTextHeight + ImageViewHeight, width: bgWidth / 2, height: BtnHeight))
+        sureBtn.setTitle("确定", for: UIControlState())
         sureBtn.titleLabel?.font = UIFont(name: "Courier", size: 20)
-        sureBtn.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        sureBtn.addTarget(self, action: #selector(CustomAlertView.surePress(_:)), forControlEvents: .TouchUpInside)
+        sureBtn.setTitleColor(UIColor.black, for: UIControlState())
+        sureBtn.addTarget(self, action: #selector(CustomAlertView.surePress(_:)), for: .touchUpInside)
         
         bgView.addSubview(cancelBtn)
         bgView.addSubview(sureBtn)
@@ -139,17 +139,17 @@ class CustomAlertView: UIView {
         
     }
     
-    func cancelPress(sender:UIButton){
+    func cancelPress(_ sender:UIButton){
         if let cancelBlock = cancelBlock{
             cancelBlock()
         }
     }
-    func surePress(sender:UIButton){
+    func surePress(_ sender:UIButton){
         if let sureBlock = sureBlock{
             sureBlock(title, initChooseImage)
         }
     }
-    func chooseImage(sender: FlagBtn){
+    func chooseImage(_ sender: FlagBtn){
         let index = sender.tag
         
         for i in 0...imageArray.count - 1{
@@ -164,7 +164,7 @@ class CustomAlertView: UIView {
     }
     
     //MARK: - click action
-    func tapBgView(sender:UITapGestureRecognizer){
+    func tapBgView(_ sender:UITapGestureRecognizer){
         titleText?.resignFirstResponder()
     }
     

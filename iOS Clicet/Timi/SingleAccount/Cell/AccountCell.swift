@@ -28,7 +28,7 @@ class AccountCell: UITableViewCell {
     var deleteCell:presentVCResponder?
     
     //MARK: - private properties
-    private var isHiddenSubview = false
+    fileprivate var isHiddenSubview = false
     
     //MARK: - init
     override func awakeFromNib() {
@@ -37,24 +37,24 @@ class AccountCell: UITableViewCell {
     }
     
     //MARK: - click action (internal)
-    @IBAction func clickIcon(sender: AnyObject) {
+    @IBAction func clickIcon(_ sender: AnyObject) {
         showSubView(!isHiddenSubview)
         showBtns(isHiddenSubview)
         isHiddenSubview = !isHiddenSubview
-        UIView.animateWithDuration(0.3, animations: {() in
+        UIView.animate(withDuration: 0.3, animations: {() in
             self.showSubView(!self.isHiddenSubview)
             self.showBtns(self.isHiddenSubview)
         })
     }
     
-    @IBAction func clickEditBtn(sender: AnyObject) {
+    @IBAction func clickEditBtn(_ sender: AnyObject) {
 
         if let block = presentVCBlock{
             block()
         }
     }
     
-    @IBAction func clickDeleteBtn(sender: AnyObject) {
+    @IBAction func clickDeleteBtn(_ sender: AnyObject) {
 
         if let block = deleteCell{
             block()
@@ -69,36 +69,36 @@ class AccountCell: UITableViewCell {
         itemCost.text = ""
         iconTitle.text = ""
         remark.text = ""
-        botmLine.hidden = false
-        topLine.hidden = false
-        dayIndicator.hidden = true
-        icon.setImage(nil, forState: .Normal)
+        botmLine.isHidden = false
+        topLine.isHidden = false
+        dayIndicator.isHidden = true
+        icon.setImage(nil, for: UIControlState())
         showSubView(true)
         showBtns(false)
         isHiddenSubview = false
     }
     
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         // Configure the view for the selected state
     }
     
     //MARK: - private
-    private func showSubView(bool:Bool){
+    fileprivate func showSubView(_ bool:Bool){
         let alpha:CGFloat = bool ? 1 : 0
         photoView.alpha = alpha
         iconTitle.alpha = alpha
         itemCost.alpha = alpha
         remark.alpha = alpha
-        deleteBtn.center = bool ? self.icon.center : CGPointMake(60, self.icon.center.y)
-        editBtn.center = bool ? self.icon.center : CGPointMake(self.frame.width - 60, self.icon.center.y)
+        deleteBtn.center = bool ? self.icon.center : CGPoint(x: 60, y: self.icon.center.y)
+        editBtn.center = bool ? self.icon.center : CGPoint(x: self.frame.width - 60, y: self.icon.center.y)
     }
-    private func showBtns(bool:Bool){
+    fileprivate func showBtns(_ bool:Bool){
         let alpha:CGFloat = bool ? 1 : 0
         deleteBtn.alpha = alpha
         editBtn.alpha = alpha
-        deleteBtn.center = bool ? CGPointMake(60, self.icon.center.y) : self.icon.center
-        editBtn.center = bool ? CGPointMake(self.frame.width - 60, self.icon.center.y) :self.icon.center
+        deleteBtn.center = bool ? CGPoint(x: 60, y: self.icon.center.y) : self.icon.center
+        editBtn.center = bool ? CGPoint(x: self.frame.width - 60, y: self.icon.center.y) :self.icon.center
     }
     
 

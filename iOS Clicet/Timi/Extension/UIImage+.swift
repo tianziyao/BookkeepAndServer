@@ -9,29 +9,29 @@
 import UIKit
 
 extension UIImage{
-    public class func cropImage(original:UIImage, scale:CGFloat)->UIImage{
+    public class func cropImage(_ original:UIImage, scale:CGFloat)->UIImage{
         let originalSize = original.size
-        let newSize = CGSizeMake(originalSize.width * scale, originalSize.height * scale)
+        let newSize = CGSize(width: originalSize.width * scale, height: originalSize.height * scale)
         
         //在画布里画原始图
         UIGraphicsBeginImageContext(newSize)
-        original.drawInRect(CGRectMake(0, 0, newSize.width, newSize.height))
+        original.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
         let cropedImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return cropedImage
+        return cropedImage!
     }
-    public class func compressImage(original:UIImage, compressionQuality:CGFloat)->NSData?{
+    public class func compressImage(_ original:UIImage, compressionQuality:CGFloat)->Data?{
         let imageData = UIImageJPEGRepresentation(original, compressionQuality)
         return imageData
     }
-    public class func cropAndCompressImage(original:UIImage, scale:CGFloat, compressionQualiy:CGFloat)->NSData?{
+    public class func cropAndCompressImage(_ original:UIImage, scale:CGFloat, compressionQualiy:CGFloat)->Data?{
         let cropImage = UIImage.cropImage(original, scale: scale)
         let imageData = compressImage(cropImage, compressionQuality: compressionQualiy)
         return imageData
     }
-    public class func generateImageWithFileName(fileName:String)->UIImage?{
+    public class func generateImageWithFileName(_ fileName:String)->UIImage?{
         let imagePath = String.createFilePathInDocumentWith(fileName) ?? ""
-        if let data = NSData(contentsOfFile: imagePath){
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: imagePath)){
             return UIImage(data: data)
         }
         else{

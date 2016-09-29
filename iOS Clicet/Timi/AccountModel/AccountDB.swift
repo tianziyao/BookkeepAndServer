@@ -31,14 +31,14 @@ class AccountItem: NSObject {
 
 class AccoutDB: NSObject {
     //取得数据库文件
-    class func getDB(path:String)->FMDatabase{
+    class func getDB(_ path:String)->FMDatabase{
         
         //创建文件路径
         let btnPath = String.createFilePathInDocumentWith(path) ?? ""
         //创建filemanager
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         //不存在要创建的文件则进入创建操作
-        if fileManager.fileExistsAtPath(btnPath) == false {
+        if fileManager.fileExists(atPath: btnPath) == false {
             //创建.db文件
             let db = FMDatabase(path: btnPath)
             //判断是否创建成功
@@ -64,72 +64,72 @@ class AccoutDB: NSObject {
         return FMDatabase(path: btnPath)
     }
     //插入数据
-    class func insertData(path:String, item:AccountItem){
+    class func insertData(_ path:String, item:AccountItem){
         let db = self.getDB(path)
         db.open()
-        db.executeUpdate(insertSQL, withArgumentsInArray: [item.iconName, item.iconTitle, item.money, item.date, item.photo, item.remark])
+        db.executeUpdate(insertSQL, withArgumentsIn: [item.iconName, item.iconTitle, item.money, item.date, item.photo, item.remark])
         db.close()
     }
     //更新数据
-    class func updateData(path:String, item:AccountItem){
+    class func updateData(_ path:String, item:AccountItem){
         let db = self.getDB(path)
         db.open()
-        db.executeUpdate(updateSQL, withArgumentsInArray: [item.iconName, item.iconTitle, item.money, item.date, item.photo, item.remark, item.ID])
+        db.executeUpdate(updateSQL, withArgumentsIn: [item.iconName, item.iconTitle, item.money, item.date, item.photo, item.remark, item.ID])
         db.close()
     }
     //删除数据
-    class func deleteData(path:String, item:AccountItem){
+    class func deleteData(_ path:String, item:AccountItem){
         let db = self.getDB(path)
         db.open()
-        db.executeUpdate(deleteSQL, withArgumentsInArray: [item.ID])
+        db.executeUpdate(deleteSQL, withArgumentsIn: [item.ID])
         db.close()
     }
-    class func deleteDataWith(path:String, ID:Int){
+    class func deleteDataWith(_ path:String, ID:Int){
         let db = self.getDB(path)
         db.open()
-        db.executeUpdate(deleteSQL, withArgumentsInArray: [ID])
+        db.executeUpdate(deleteSQL, withArgumentsIn: [ID])
         db.close()
     }
     //查询数据
-    class func selectDataWithID(path:String, id:Int)->AccountItem{
+    class func selectDataWithID(_ path:String, id:Int)->AccountItem{
         let db = self.getDB(path)
         db.open()
-        let rs = db.executeQuery(selectSQL, withArgumentsInArray: [id])
+        let rs = db.executeQuery(selectSQL, withArgumentsIn: [id])
         let item = AccountItem()
-        while rs.next(){
-            item.ID = Int(rs.intForColumn("ID"))
-            item.iconName = rs.stringForColumn("ICONNAME")
-            item.iconTitle = rs.stringForColumn("ICONTITLE")
-            item.money = rs.stringForColumn("MONEY")
-            item.date = Int(rs.intForColumn("DATE"))
-            item.remark = rs.stringForColumn("REMARK")
-            item.photo = rs.stringForColumn("PHOTO")
+        while (rs?.next())!{
+            item.ID = Int((rs?.int(forColumn: "ID"))!)
+            item.iconName = (rs?.string(forColumn: "ICONNAME"))!
+            item.iconTitle = (rs?.string(forColumn: "ICONTITLE"))!
+            item.money = (rs?.string(forColumn: "MONEY"))!
+            item.date = Int((rs?.int(forColumn: "DATE"))!)
+            item.remark = (rs?.string(forColumn: "REMARK"))!
+            item.photo = (rs?.string(forColumn: "PHOTO"))!
         }
         db.close()
         return item
     }
-    class func selectDataOrderByDate(path:String)->[AccountItem] {
+    class func selectDataOrderByDate(_ path:String)->[AccountItem] {
         let db = self.getDB(path)
         db.open()
-        let rs = db.executeQuery(selectOrderByDateSQL, withArgumentsInArray: nil)
+        let rs = db.executeQuery(selectOrderByDateSQL, withArgumentsIn: nil)
         
         var items:[AccountItem] = []
-        while rs != nil && rs.next(){
+        while rs != nil && (rs?.next())!{
             let item = AccountItem()
-            item.ID = Int(rs.intForColumn("ID"))
-            item.iconName = rs.stringForColumn("ICONNAME")
-            item.iconTitle = rs.stringForColumn("ICONTITLE")
-            item.money = rs.stringForColumn("MONEY")
-            item.date = Int(rs.intForColumn("DATE"))
-            item.remark = rs.stringForColumn("REMARK")
-            item.photo = rs.stringForColumn("PHOTO")
+            item.ID = Int((rs?.int(forColumn: "ID"))!)
+            item.iconName = (rs?.string(forColumn: "ICONNAME"))!
+            item.iconTitle = (rs?.string(forColumn: "ICONTITLE"))!
+            item.money = (rs?.string(forColumn: "MONEY"))!
+            item.date = Int((rs?.int(forColumn: "DATE"))!)
+            item.remark = (rs?.string(forColumn: "REMARK"))!
+            item.photo = (rs?.string(forColumn: "PHOTO"))!
             items.append(item)
         }
         db.close()
         return items
     }
     
-    class func itemCount(path:String)->Int{
+    class func itemCount(_ path:String)->Int{
         let db = self.getDB(path)
         db.open()
         let DBItemCount = db.intForQuery("SELECT COUNT(ID) FROM AccountModel")

@@ -52,15 +52,15 @@ class SingleAccountView: UIView {
             return midBtn.titleLabel?.text
         }
         set(newValue){
-            midBtn.setTitle(newValue, forState: .Normal)
+            midBtn.setTitle(newValue, for: UIControlState())
         }
     }
     
     //MARK: - private properties
-    private var tableView:UITableView!
-    private var totalIncomeNum:UILabel!
-    private var totalCostNum:UILabel!
-    private var midBtn:UIButton!
+    fileprivate var tableView:UITableView!
+    fileprivate var totalIncomeNum:UILabel!
+    fileprivate var totalCostNum:UILabel!
+    fileprivate var midBtn:UIButton!
     
     //MARK: - init methods (internal)
     override init(frame: CGRect) {
@@ -83,56 +83,56 @@ class SingleAccountView: UIView {
     }
     
     //MARK: - click action methods (internal)
-    func clickManageBtn(sender:AnyObject!){
-        if delegate.respondsToSelector(#selector(SingleAccountView.clickManageBtn(_:))) != false{
+    func clickManageBtn(_ sender:AnyObject!){
+        if delegate.responds(to: #selector(SingleAccountView.clickManageBtn(_:))) != false{
             delegate.clickManageBtn(sender)
         }
     }
-    func clickMidAddBtn(sender:AnyObject!){
-        if delegate.respondsToSelector(#selector(SingleAccountView.clickMidAddBtn(_:))) != false{
+    func clickMidAddBtn(_ sender:AnyObject!){
+        if delegate.responds(to: #selector(SingleAccountView.clickMidAddBtn(_:))) != false{
             delegate.clickMidAddBtn(sender)
         }
     }
     
     //MARK: - setup views methods (private)
-    private func setup(frame:CGRect){
+    fileprivate func setup(_ frame:CGRect){
         
         
         //头部view
-        setupHeadBar(CGRectMake(0, 0, frame.width, HeadBarHeight))
+        setupHeadBar(CGRect(x: 0, y: 0, width: frame.width, height: HeadBarHeight))
         //中间add按钮
         setupMidAddBtn(frame)
         //收入支出栏
         setupIncomeCostBar(frame)
         //流水账
         let DayAccountsY = HeadBarHeight + LabelMargin * 2  + LabelHeight * 2
-        setupDayAccounts(CGRectMake(0, DayAccountsY, frame.width, frame.height - DayAccountsY))
+        setupDayAccounts(CGRect(x: 0, y: DayAccountsY, width: frame.width, height: frame.height - DayAccountsY))
     }
     
     //头部view
-    private func setupHeadBar(frame:CGRect){
+    fileprivate func setupHeadBar(_ frame:CGRect){
         
         let HeadBarWidth:CGFloat = frame.width
         
         let headBar = UIImageView(frame: frame)
         headBar.image = UIImage(named: "background1")
-        headBar.userInteractionEnabled = true
+        headBar.isUserInteractionEnabled = true
         
-        let manageBtn = UIButton(frame: CGRectMake(BtnMargin, BtnMargin + StatusBarHeight, BtnWidth, BtnWidth))
-        manageBtn.setImage(UIImage(named: "btn_menu"), forState: .Normal)
-        manageBtn.addTarget(self, action: #selector(SingleAccountVC.clickManageBtn(_:)), forControlEvents: .TouchUpInside)
+        let manageBtn = UIButton(frame: CGRect(x: BtnMargin, y: BtnMargin + StatusBarHeight, width: BtnWidth, height: BtnWidth))
+        manageBtn.setImage(UIImage(named: "btn_menu"), for: UIControlState())
+        manageBtn.addTarget(self, action: #selector(SingleAccountVC.clickManageBtn(_:)), for: .touchUpInside)
         
-        let midBtn = UIButton(frame: CGRectMake(0, 0, MidBtnWidth, MidBtnHeight))
-        midBtn.center = CGPointMake(HeadBarWidth/2, MidBtnMarginTop + StatusBarHeight)
-        midBtn.setTitle("日常账本", forState: .Normal)
+        let midBtn = UIButton(frame: CGRect(x: 0, y: 0, width: MidBtnWidth, height: MidBtnHeight))
+        midBtn.center = CGPoint(x: HeadBarWidth/2, y: MidBtnMarginTop + StatusBarHeight)
+        midBtn.setTitle("日常账本", for: UIControlState())
         midBtn.titleLabel?.font = UIFont(name: "Courier", size: 12)
         midBtn.layer.cornerRadius = 10
-        midBtn.layer.borderColor = UIColor.whiteColor().CGColor
+        midBtn.layer.borderColor = UIColor.white.cgColor
         midBtn.layer.borderWidth = 1
         self.midBtn = midBtn
         
-        let takePhotoBtn = UIButton(frame: CGRectMake(HeadBarWidth - BtnMargin - BtnWidth, BtnMargin + StatusBarHeight, BtnWidth, BtnWidth))
-        takePhotoBtn.setImage(UIImage(named: "btn_camera"), forState: .Normal)
+        let takePhotoBtn = UIButton(frame: CGRect(x: HeadBarWidth - BtnMargin - BtnWidth, y: BtnMargin + StatusBarHeight, width: BtnWidth, height: BtnWidth))
+        takePhotoBtn.setImage(UIImage(named: "btn_camera"), for: UIControlState())
         
         headBar.addSubview(manageBtn)
         headBar.addSubview(midBtn)
@@ -141,35 +141,35 @@ class SingleAccountView: UIView {
         self.addSubview(headBar)
     }
     //中间add按钮
-    private func setupMidAddBtn(frame:CGRect){
+    fileprivate func setupMidAddBtn(_ frame:CGRect){
         let MidAddBtnWidth:CGFloat = 90
-        let midAddBtn = UIButton(frame: CGRectMake(0, 0, MidAddBtnWidth, MidAddBtnWidth))
-        midAddBtn.center = CGPointMake(frame.width/2, HeadBarHeight)
-        midAddBtn.setImage(UIImage(named: "circle_btn"), forState: .Normal)
-        midAddBtn.backgroundColor = UIColor.whiteColor()
+        let midAddBtn = UIButton(frame: CGRect(x: 0, y: 0, width: MidAddBtnWidth, height: MidAddBtnWidth))
+        midAddBtn.center = CGPoint(x: frame.width/2, y: HeadBarHeight)
+        midAddBtn.setImage(UIImage(named: "circle_btn"), for: UIControlState())
+        midAddBtn.backgroundColor = UIColor.white
         midAddBtn.layer.cornerRadius = 45
-        midAddBtn.addTarget(self, action: #selector(SingleAccountVC.clickMidAddBtn(_:)), forControlEvents: .TouchUpInside)
+        midAddBtn.addTarget(self, action: #selector(SingleAccountVC.clickMidAddBtn(_:)), for: .touchUpInside)
         
         self.addSubview(midAddBtn)
     }
     //收入支出栏
-    private func setupIncomeCostBar(frame:CGRect){
+    fileprivate func setupIncomeCostBar(_ frame:CGRect){
         
-        let income = UILabel(frame: CGRectMake(LabelMargin, HeadBarHeight + LabelMargin, LabelWidth, LabelHeight))
+        let income = UILabel(frame: CGRect(x: LabelMargin, y: HeadBarHeight + LabelMargin, width: LabelWidth, height: LabelHeight))
         income.text = "收入"
         
         let CostX = frame.width - LabelWidth - LabelMargin
-        let cost = UILabel(frame: CGRectMake(CostX, HeadBarHeight + LabelMargin, LabelWidth, LabelHeight))
-        cost.textAlignment = .Right
+        let cost = UILabel(frame: CGRect(x: CostX, y: HeadBarHeight + LabelMargin, width: LabelWidth, height: LabelHeight))
+        cost.textAlignment = .right
         cost.text = "支出"
         
         let IncomeNumY = HeadBarHeight + LabelMargin + LabelHeight
-        let incomeNum = UILabel(frame: CGRectMake(LabelMargin, IncomeNumY, LabelWidth, LabelHeight))
+        let incomeNum = UILabel(frame: CGRect(x: LabelMargin, y: IncomeNumY, width: LabelWidth, height: LabelHeight))
         incomeNum.text = "0.00"
         self.totalIncomeNum = incomeNum
         
-        let costNum = UILabel(frame: CGRectMake(CostX, IncomeNumY, LabelWidth, LabelHeight))
-        costNum.textAlignment = .Right
+        let costNum = UILabel(frame: CGRect(x: CostX, y: IncomeNumY, width: LabelWidth, height: LabelHeight))
+        costNum.textAlignment = .right
         costNum.text = "0.00"
         self.totalCostNum = costNum
         
@@ -179,17 +179,17 @@ class SingleAccountView: UIView {
         self.addSubview(costNum)
     }
     //流水账
-    private func setupDayAccounts(frame:CGRect){
+    fileprivate func setupDayAccounts(_ frame:CGRect){
         let DayAccountsView = UITableView(frame: frame)
-        DayAccountsView.separatorStyle = .None
-        DayAccountsView.registerNib(UINib(nibName: "InComeAccountCell", bundle: nil), forCellReuseIdentifier: "InComeAccountCell")
-        DayAccountsView.registerNib(UINib(nibName: "OutComeAccountCell", bundle: nil), forCellReuseIdentifier: "OutComeAccountCell")
+        DayAccountsView.separatorStyle = .none
+        DayAccountsView.register(UINib(nibName: "InComeAccountCell", bundle: nil), forCellReuseIdentifier: "InComeAccountCell")
+        DayAccountsView.register(UINib(nibName: "OutComeAccountCell", bundle: nil), forCellReuseIdentifier: "OutComeAccountCell")
         DayAccountsView.dataSource = delegate
         DayAccountsView.delegate = delegate
         DayAccountsView.rowHeight = UITableViewAutomaticDimension
         DayAccountsView.showsVerticalScrollIndicator = false
         
-        let midColumnLine = UIView(frame: CGRectMake(self.center.x - 2, -300, 1, 300))
+        let midColumnLine = UIView(frame: CGRect(x: self.center.x - 2, y: -300, width: 1, height: 300))
         midColumnLine.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
         DayAccountsView.addSubview(midColumnLine)
         

@@ -17,19 +17,19 @@ extension String{
 }
 
 extension String{
-    public static func createFilePathInDocumentWith(fileName:String) -> String? {
+    public static func createFilePathInDocumentWith(_ fileName:String) -> String? {
         //返回的paths可能不存在
-        let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true) as NSArray
+        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true) as NSArray
         let docPath = paths.firstObject as? NSString
-        return docPath?.stringByAppendingPathComponent(fileName)
+        return docPath?.appendingPathComponent(fileName)
     }
     
-    public static func createDirectoryInDocumentWith(directoryName:String) -> String?{
+    public static func createDirectoryInDocumentWith(_ directoryName:String) -> String?{
         let directoryPath = String.createFilePathInDocumentWith(directoryName) ?? ""
         //在沙盒中创建目录
-        if(NSFileManager.defaultManager().fileExistsAtPath(directoryPath) == false){
+        if(FileManager.default.fileExists(atPath: directoryPath) == false){
             do{
-                try NSFileManager.defaultManager().createDirectoryAtPath(directoryPath, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(atPath: directoryPath, withIntermediateDirectories: true, attributes: nil)
             }catch {
                 print("Could not create the DatabaseDoc directory")
             }

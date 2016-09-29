@@ -11,15 +11,15 @@ import UIKit
 class ComputedBoardLogic:NSObject{
     
     //存放上一次的累加值
-    private var result:Float = 0
-    private var summand: Float = 0
-    private var addend: Float = 0
-    private var decimal:Float = 0
-    private var numOfDecimal:Int = 0
-    private var numOfInt = 0
-    private var pressAdd = false
-    private var pressEqual = false
-    private var pressDot = false
+    fileprivate var result:Float = 0
+    fileprivate var summand: Float = 0
+    fileprivate var addend: Float = 0
+    fileprivate var decimal:Float = 0
+    fileprivate var numOfDecimal:Int = 0
+    fileprivate var numOfInt = 0
+    fileprivate var pressAdd = false
+    fileprivate var pressEqual = false
+    fileprivate var pressDot = false
     
     var okBtn = UIButton()
     
@@ -27,25 +27,25 @@ class ComputedBoardLogic:NSObject{
     var pressOKClosure:(()->Void)?
     var pressIncomeAndCostClosure:(()->Void)?
     
-    private func outOfDocMode(){
+    fileprivate func outOfDocMode(){
         pressDot = false
         numOfDecimal = 0
     }
     var date = 0
     var remark:String?
     var photoName:String?
-    private func pressOK(){
+    fileprivate func pressOK(){
         if let pressOKClosure = pressOKClosure{
             pressOKClosure()
         }
     }
-    private func pressIncomeAndCost(){
+    fileprivate func pressIncomeAndCost(){
         if let pressIncomeAndCostClosure = pressIncomeAndCostClosure{
             pressIncomeAndCostClosure()
         }
     }
     
-    func Compute(value:String){
+    func Compute(_ value:String){
         switch value {
         case "1","2", "3", "4", "5", "6", "7", "8", "9", "0" :
             //点击了+号
@@ -100,7 +100,7 @@ class ComputedBoardLogic:NSObject{
             if let computedMoney = computedMoney{
                 computedMoney(result)
             }
-            okBtn.setTitle("OK", forState: .Normal)
+            okBtn.setTitle("OK", for: UIControlState())
         case "OK" :
             pressOK()
         case ".":
@@ -117,13 +117,13 @@ class ComputedBoardLogic:NSObject{
             if let computedMoney = computedMoney{
                 computedMoney(result)
             }
-            okBtn.setTitle("=", forState: .Normal)
+            okBtn.setTitle("=", for: UIControlState())
             
         case "=":
             numOfInt = 0
             outOfDocMode()
             pressEqual = true
-            okBtn.setTitle("OK", forState: .Normal)
+            okBtn.setTitle("OK", for: UIControlState())
             if addend != 0 {
                 summand += addend
                 addend = 0

@@ -35,18 +35,18 @@ class LoginViewController: UIViewController, JSAnimatedImagesViewDataSource, RES
     @IBOutlet weak var userNameInput: UITextField!
     @IBOutlet weak var passwordInput: UITextField!
     
-    @IBAction func loginBtnDidClick(sender: AnyObject) {
+    @IBAction func loginBtnDidClick(_ sender: AnyObject) {
       
-        let url = NSURL(string: "http://123.206.27.127/timi/signin.php")
-        let request = NSMutableURLRequest(URL: url!)
+        let url = URL(string: "http://123.206.27.127/timi/signin.php")
+        let request = NSMutableURLRequest(url: url!)
         let userInfo = "username=\(userNameInput.text!)&password=\(passwordInput.text!)"
-        request.HTTPMethod = "POST"
-        request.HTTPBody = userInfo.dataUsingEncoding(NSUTF8StringEncoding)
+        request.httpMethod = "POST"
+        request.httpBody = userInfo.data(using: String.Encoding.utf8)
         
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { (data, resp, error) in
-            let result = (String(data: data!, encoding: NSUTF8StringEncoding))
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, resp, error) in
+            let result = (String(data: data!, encoding: String.Encoding.utf8))
             if result == "登录成功" {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     
                     self.clearAllNotice()
                     self.noticeSuccess(result!, autoClear: true, autoClearTime: 2)
@@ -55,20 +55,20 @@ class LoginViewController: UIViewController, JSAnimatedImagesViewDataSource, RES
                     let leftMenuVC = MainViewController(model: mainVCModel)
                     let homeVC = SingleAccountVC(model: singleAccountModel)
                     let sideMenu = RESideMenu.init(contentViewController: homeVC, leftMenuViewController: leftMenuVC, rightMenuViewController: nil)
-                    let ScreenWithRatio = UIScreen.mainScreen().bounds.width / 375
+                    let ScreenWithRatio = UIScreen.main.bounds.width / 375
                     sideMenu.delegate = self
                     sideMenu.contentViewInPortraitOffsetCenterX = 150 * ScreenWithRatio
                     sideMenu.contentViewShadowEnabled = true
                     sideMenu.contentViewShadowOffset = CGSize(width: -2, height: -2)
-                    sideMenu.contentViewShadowColor = UIColor.blackColor()
+                    sideMenu.contentViewShadowColor = UIColor.black
                     sideMenu.scaleContentView = false
                     sideMenu.scaleMenuView = false
                     sideMenu.fadeMenuView = false
-                    self.navigationController?.presentViewController(sideMenu, animated: true, completion: nil)
+                    self.navigationController?.present(sideMenu, animated: true, completion: nil)
                 })
             }
             else if result == "用户名或密码错误" {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.clearAllNotice()
                     self.noticeError(result!, autoClear: true, autoClearTime: 2)
                 })
@@ -77,13 +77,13 @@ class LoginViewController: UIViewController, JSAnimatedImagesViewDataSource, RES
                 print(error?.localizedDescription)
             }
 
-        }
+        }) 
         task.resume()
     }
     
     
-    @IBAction func signoutBtnDidClick(sender: AnyObject) {
-        self.navigationController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func signoutBtnDidClick(_ sender: AnyObject) {
+        self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     
@@ -92,36 +92,36 @@ class LoginViewController: UIViewController, JSAnimatedImagesViewDataSource, RES
         super.viewDidLoad()
         
         avatar.layer.borderWidth = 1
-        avatar.layer.borderColor = UIColor.darkGrayColor().CGColor
+        avatar.layer.borderColor = UIColor.darkGray.cgColor
 //        let tap = UITapGestureRecognizer(target: self, action: #selector(LoginViewController.handleTap))
 //        self.view.addGestureRecognizer(tap)
     
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
         super.viewDidAppear(animated)
         
-        UIView.animateWithDuration(0.5) {
-            self.loginStackView.axis = .Vertical
-        }
+        UIView.animate(withDuration: 0.5, animations: {
+            self.loginStackView.axis = .vertical
+        }) 
     }
     
-    override func viewWillAppear(animated: Bool) {
-        self.navigationController?.navigationBarHidden = true
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
         self.backgroudView.dataSource = self
     }
     
     
-    func animatedImagesNumberOfImages(animatedImagesView: JSAnimatedImagesView!) -> UInt {
+    func animatedImagesNumber(ofImages animatedImagesView: JSAnimatedImagesView!) -> UInt {
         return 3
     }
     
-    func animatedImagesView(animatedImagesView: JSAnimatedImagesView!, imageAtIndex index: UInt) -> UIImage! {
+    func animatedImagesView(_ animatedImagesView: JSAnimatedImagesView!, imageAt index: UInt) -> UIImage! {
         return UIImage(named: "wallpaper\(index + 1)")
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
     

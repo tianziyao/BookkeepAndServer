@@ -21,10 +21,10 @@ import UIKit
 
 
 enum UITextBoxHighlightState {
-    case Default
-    case Validator  (String)    // 状态提示文字
-    case Warning    (String)    // 状态提示文字
-    case Wrong      (String)    // 状态提示文字
+    case `default`
+    case validator  (String)    // 状态提示文字
+    case warning    (String)    // 状态提示文字
+    case wrong      (String)    // 状态提示文字
 }
 
 @IBDesignable
@@ -39,7 +39,7 @@ class UITextBox: UITextField {
     @IBInspectable var animateDuration:CGFloat = 0.4
     weak var placeholderLabel:UILabel?
     
-    @NSCopying private var _backgroundColor: UIColor? = nil
+    @NSCopying fileprivate var _backgroundColor: UIColor? = nil
     override var backgroundColor: UIColor? {
         set {
             _backgroundColor = newValue
@@ -67,19 +67,19 @@ class UITextBox: UITextField {
     }
     
     
-    private var _highlightState:UITextBoxHighlightState {
-        return text == nil || text == "" ? .Default : highlightState
+    fileprivate var _highlightState:UITextBoxHighlightState {
+        return text == nil || text == "" ? .default : highlightState
     }
-    var highlightState:UITextBoxHighlightState = .Default {
+    var highlightState:UITextBoxHighlightState = .default {
     didSet {
         if let label = placeholderLabel {
             setHighlightText(label, state: _highlightState)
             self.layoutSubviews()
         }
-        UIView.animateWithDuration(NSTimeInterval(animateDuration)) {
+        UIView.animate(withDuration: TimeInterval(animateDuration), animations: {
             super.backgroundColor = self.getHighlightColor(self._highlightState)
             
-        }
+        }) 
     }
     }
     
@@ -109,12 +109,12 @@ class UITextBox: UITextField {
     }
     
     //
-    private func animationFirstResponder(isFirstResponder:Bool) -> Bool {
-        UIView.animateWithDuration(NSTimeInterval(animateDuration)) {
+    fileprivate func animationFirstResponder(_ isFirstResponder:Bool) -> Bool {
+        UIView.animate(withDuration: TimeInterval(animateDuration), animations: {
             let color = self.getHighlightColor(self._highlightState)
             super.backgroundColor = color
             self.placeholderLabel?.textColor = self.getTextColorWithHighlightColor(color)
-        }
+        }) 
         return isFirstResponder
     }
     
@@ -122,8 +122,8 @@ class UITextBox: UITextField {
     //调整子控件布局
     override func layoutSubviews() {
         super.layoutSubviews()
-        let rect = super.placeholderRectForBounds(bounds)
-        if isFirstResponder() {
+        let rect = super.placeholderRect(forBounds: bounds)
+        if isFirstResponder {
             layoutPlaceholderLabel(rect,false)
         } else if text == nil || text == "" {
             layoutPlaceholderLabel(rect,true)
@@ -132,10 +132,10 @@ class UITextBox: UITextField {
         }
     }
     
-    override func willMoveToSuperview(newSuperview: UIView!)  {
-        super.willMoveToSuperview(newSuperview)
+    override func willMove(toSuperview newSuperview: UIView!)  {
+        super.willMove(toSuperview: newSuperview)
         if placeholderLabel == nil {
-            let rect = super.placeholderRectForBounds(bounds)
+            let rect = super.placeholderRect(forBounds: bounds)
             let label = UILabel(frame: rect)
             label.font = self.font
             setHighlightText(label, state: self._highlightState)
@@ -151,8 +151,8 @@ class UITextBox: UITextField {
     }
     
 
-    override func placeholderRectForBounds(bounds: CGRect) -> CGRect {
-        let rect = super.placeholderRectForBounds(bounds)
+    override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        let rect = super.placeholderRect(forBounds: bounds)
         if placeholderLabel == nil {
             let label = UILabel(frame: rect)
             label.textColor = UIColor(white: 0.7, alpha: 1.0)
@@ -161,19 +161,19 @@ class UITextBox: UITextField {
             addSubview(label)
         }
         setHighlightText(placeholderLabel!, state: self._highlightState)
-        layoutPlaceholderLabel(rect,!isFirstResponder())
+        layoutPlaceholderLabel(rect,!isFirstResponder)
         return CGRect.zero
     }
     
     
     //布局提示文本
-    func layoutPlaceholderLabel(rect: CGRect,_ left: Bool = false) {
+    func layoutPlaceholderLabel(_ rect: CGRect,_ left: Bool = false) {
         guard let label = placeholderLabel else {
             return
         }
         
         if left {
-            UIView.animateWithDuration(NSTimeInterval(animateDuration), delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: UIViewAnimationOptions.CurveLinear, animations: {
+            UIView.animate(withDuration: TimeInterval(animateDuration), delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: UIViewAnimationOptions.curveLinear, animations: {
                 label.frame = rect;
             }, completion: nil)
         } else {
@@ -182,22 +182,22 @@ class UITextBox: UITextField {
             frame.size.width = size.width
             frame.size.height = rect.height
             //print("super.clearButtonRectForBounds(bounds):\(super.clearButtonRectForBounds(bounds))")
-            frame.origin.x = super.clearButtonRectForBounds(bounds).minX - size.width
-            UIView.animateWithDuration(NSTimeInterval(animateDuration), delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: UIViewAnimationOptions.CurveLinear, animations: {
+            frame.origin.x = super.clearButtonRect(forBounds: bounds).minX - size.width
+            UIView.animate(withDuration: TimeInterval(animateDuration), delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: UIViewAnimationOptions.curveLinear, animations: {
                 label.frame = frame;
             }, completion: nil)
         }
     }
     
-    private func setHighlightText(label:UILabel, state:UITextBoxHighlightState) {
+    fileprivate func setHighlightText(_ label:UILabel, state:UITextBoxHighlightState) {
         switch state {
-        case .Wrong(let errorText):
+        case .wrong(let errorText):
             label.textColor = getTextColorWithHighlightColor(wrongColor)
             label.text = errorText
-        case .Warning(let warningText):
+        case .warning(let warningText):
             label.textColor = getTextColorWithHighlightColor(warningColor)
             label.text = warningText
-        case .Validator(let validatorText):
+        case .validator(let validatorText):
             label.textColor = getTextColorWithHighlightColor(validatorColor)
             label.text = validatorText
         default:
@@ -209,7 +209,7 @@ class UITextBox: UITextField {
             label.textColor = getTextColorWithHighlightColor(getHighlightColor(_highlightState))
         }
     }
-    private func getTextColorWithHighlightColor(color:UIColor) -> UIColor {
+    fileprivate func getTextColorWithHighlightColor(_ color:UIColor) -> UIColor {
         var r:CGFloat = 0
         var g:CGFloat = 0
         var b:CGFloat = 0
@@ -217,12 +217,12 @@ class UITextBox: UITextField {
         color.getRed(&r, green: &g, blue: &b, alpha: &a)
         return UIColor(red: r*r*0.7, green: g*g*0.7, blue: b*b*0.7, alpha: a)   // 同类颜色加深一些
     }
-    private func getHighlightColor(state:UITextBoxHighlightState) -> UIColor {
+    fileprivate func getHighlightColor(_ state:UITextBoxHighlightState) -> UIColor {
         switch state {
-        case .Wrong:        return wrongColor
-        case .Warning:      return warningColor
-        case .Validator:    return validatorColor
-        default:            return self.isFirstResponder() ? highlightColor : self.backgroundColor ?? UIColor.whiteColor()
+        case .wrong:        return wrongColor
+        case .warning:      return warningColor
+        case .validator:    return validatorColor
+        default:            return self.isFirstResponder ? highlightColor : self.backgroundColor ?? UIColor.white
         }
     }
     /*
@@ -247,22 +247,22 @@ extension UIColor {
     convenience init?(hex:String) {
         let regular:NSRegularExpression
         do {
-            regular = try NSRegularExpression(pattern: "(#?|0x)[0-9a-fA-F]{2,}", options: NSRegularExpressionOptions.CaseInsensitive)
+            regular = try NSRegularExpression(pattern: "(#?|0x)[0-9a-fA-F]{2,}", options: NSRegularExpression.Options.caseInsensitive)
         } catch { return nil }
         
-        let length = hex.startIndex.distanceTo(hex.endIndex)
-        guard let result = regular.firstMatchInString(hex, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, length)) else {
+        let length = hex.characters.distance(from: hex.startIndex, to: hex.endIndex)
+        guard let result = regular.firstMatch(in: hex, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, length)) else {
             print("error: hex isn't color hex value!")
             return nil
         }
         
-        let start = hex.startIndex.advancedBy(result.rangeAtIndex(1).length + result.rangeAtIndex(1).location)
-        let end = hex.startIndex.advancedBy(result.range.length + result.range.location)
+        let start = hex.characters.index(hex.startIndex, offsetBy: result.rangeAt(1).length + result.rangeAt(1).location)
+        let end = hex.characters.index(hex.startIndex, offsetBy: result.range.length + result.range.location)
         let number = strtoul(hex[start..<end], nil, 16)
         let b = CGFloat((number >>  0) & 0xFF) / 255
         let g = CGFloat((number >>  8) & 0xFF) / 255
         let r = CGFloat((number >> 16) & 0xFF) / 255
-        let a = (start.distanceTo(end)) > 6 ? CGFloat((number >> 24) & 0xFF) / 255 : 1
+        let a = (<#T##String.CharacterView corresponding to `start`##String.CharacterView#>.distance(from: start, to: end)) > 6 ? CGFloat((number >> 24) & 0xFF) / 255 : 1
         
         self.init(red: r, green: g, blue: b, alpha: a)
     }

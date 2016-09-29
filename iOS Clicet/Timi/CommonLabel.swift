@@ -10,8 +10,8 @@ import UIKit
 
 class CommonLabel: UIView {
 
-    private var upLabel:UILabel!
-    private var downLabel:UILabel!
+    fileprivate var upLabel:UILabel!
+    fileprivate var downLabel:UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,19 +25,19 @@ class CommonLabel: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setUpLabel(text:String) {
+    func setUpLabel(_ text:String) {
         upLabel.text = text
         upLabel.sizeToFit()
     }
-    func setDownLabel(text:String) {
+    func setDownLabel(_ text:String) {
         downLabel.text = text
         downLabel.sizeToFit()
     }
     
-    private func setupViews(){
+    fileprivate func setupViews(){
         
         let downLabel = UILabel()
-        downLabel.textAlignment = .Center
+        downLabel.textAlignment = .center
         downLabel.sizeToFit()
         self.downLabel = downLabel
         self.addSubview(downLabel)
@@ -48,7 +48,7 @@ class CommonLabel: UIView {
             }
         }
         let upperLabel = UILabel()
-        upperLabel.textAlignment = .Center
+        upperLabel.textAlignment = .center
         upperLabel.sizeToFit()
         self.upLabel = upperLabel
         self.addSubview(upperLabel)

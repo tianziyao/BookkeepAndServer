@@ -37,7 +37,7 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
         //MARK: 正则表达式和谓词匹配
         let regex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
         let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
-        guard predicate.evaluateWithObject(emailInput.text) else {
+        guard predicate.evaluate(with: emailInput.text) else {
             self.noticeError("邮箱格式错误", autoClear: true, autoClearTime: 2)
             return
         }
@@ -48,16 +48,16 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
         //MARK: 转动菊花/载入提示
         self.pleaseWait()
         //MARK: 建立用户信息
-        let url = NSURL(string: "http://123.206.27.127/timi/login.php")
+        let url = URL(string: "http://123.206.27.127/timi/login.php")
         let userInfo = "username=\(userNameInput.text!)&password=\(passwordInput.text!)&useremail=\(emailInput.text!)"
-        let request = NSMutableURLRequest(URL: url!)
-        request.HTTPMethod = "POST"
-        request.HTTPBody = userInfo.dataUsingEncoding(NSUTF8StringEncoding)
+        let request = NSMutableURLRequest(url: url!)
+        request.httpMethod = "POST"
+        request.httpBody = userInfo.data(using: String.Encoding.utf8)
         
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { (data, resp, error) in
-            let result = (String(data: data!, encoding: NSUTF8StringEncoding))
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, resp, error) in
+            let result = (String(data: data!, encoding: String.Encoding.utf8))
             if result == "注册成功" {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.clearAllNotice()
                     self.noticeSuccess(result!, autoClear: true, autoClearTime: 2)
                     self.clearAllNotice()
@@ -67,22 +67,22 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
                     let leftMenuVC = MainViewController(model: mainVCModel)
                     let homeVC = SingleAccountVC(model: singleAccountModel)
                     let sideMenu = RESideMenu.init(contentViewController: homeVC, leftMenuViewController: leftMenuVC, rightMenuViewController: nil)
-                    let ScreenWithRatio = UIScreen.mainScreen().bounds.width / 375
+                    let ScreenWithRatio = UIScreen.main.bounds.width / 375
                     sideMenu.delegate = self
                     sideMenu.contentViewInPortraitOffsetCenterX = 150 * ScreenWithRatio
                     sideMenu.contentViewShadowEnabled = true
                     sideMenu.contentViewShadowOffset = CGSize(width: -2, height: -2)
-                    sideMenu.contentViewShadowColor = UIColor.blackColor()
+                    sideMenu.contentViewShadowColor = UIColor.black
                     sideMenu.scaleContentView = false
                     sideMenu.scaleMenuView = false
                     sideMenu.fadeMenuView = false
                     
                     //MainView().title.text = self.userNameInput.text!
-                    self.navigationController?.presentViewController(sideMenu, animated: true, completion: nil)
+                    self.navigationController?.present(sideMenu, animated: true, completion: nil)
                 })
             }
             else if result == "用户名已存在" {
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.clearAllNotice()
                     self.noticeError(result!, autoClear: true, autoClearTime: 2)
                 })
@@ -90,7 +90,7 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
             else {
                 print(error?.localizedDescription)
             }
-        }
+        }) 
         task.resume()
         
     }
@@ -98,15 +98,15 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationController?.navigationBarHidden = false
+        self.navigationController?.isNavigationBarHidden = false
         self.title = "注册用户"
         
         submitBtn = UIBarButtonItem(title: "提交",
-                                    style: .Done,
+                                    style: .done,
                                     target: self,
                                     action: #selector(RegTableViewController.submitUserInfo))
         
-        submitBtn.enabled = false
+        submitBtn.isEnabled = false
         self.navigationItem.rightBarButtonItem = submitBtn
         let tap = UITapGestureRecognizer(target: self, action: #selector(RegTableViewController.handleTap))
         self.view.addGestureRecognizer(tap)
@@ -136,32 +136,32 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
         //        userNameInput.rightViewMode = .WhileEditing
     }
     
-    func checkInput(textInput: UITextBox, type: String) {
+    func checkInput(_ textInput: UITextBox, type: String) {
         
-        let check = AJWValidator(type: .String)
+        let check = AJWValidator(type: .string)
         
         if type == "user" || type == "password" {
-            check.addValidationToEnsureMinimumLength(3, invalidMessage: "至少3个字符")
-            check.addValidationToEnsureMaximumLength(10, invalidMessage: "最多10个字符")
+            check?.addValidation(toEnsureMinimumLength: 3, invalidMessage: "至少3个字符")
+            check?.addValidation(toEnsureMaximumLength: 10, invalidMessage: "最多10个字符")
         }
         else if type == "email" {
-            check.addValidationToEnsureValidEmailWithInvalidMessage("邮箱格式有误")
+            check?.addValidationToEnsureValidEmail(withInvalidMessage: "邮箱格式有误")
         }
         
-        textInput.ajw_attachValidator(check)
-        check.validatorStateChangedHandler = { state in
+        textInput.ajw_attach(check)
+        check?.validatorStateChangedHandler = { state in
             
             switch state {
-            case .ValidationStateValid:
-                textInput.highlightState = UITextBoxHighlightState.Default
+            case .validationStateValid:
+                textInput.highlightState = UITextBoxHighlightState.default
                 self.checkResult(type, state: true)
             default:
-                let error = check.errorMessages.first as! String
-                textInput.highlightState = UITextBoxHighlightState.Wrong(error)
+                let error = check?.errorMessages.first as! String
+                textInput.highlightState = UITextBoxHighlightState.wrong(error)
                 self.checkResult(type, state: false)
             }
             //MARK: 验证提交按钮的有效性
-            self.submitBtn.enabled = self.mailOK && self.passOK && self.userOK
+            self.submitBtn.isEnabled = self.mailOK && self.passOK && self.userOK
             
             /**
             print("\(self.mailOK) \(self.passOK) \(self.userOK)")
@@ -176,7 +176,7 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
         }
     }
     
-    func checkResult(type: String, state: Bool) {
+    func checkResult(_ type: String, state: Bool) {
         if type == "user" {
             self.userOK = state
         }
@@ -188,7 +188,7 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
         }
     }
     
-    func handleTap(sender: UITapGestureRecognizer) {
+    func handleTap(_ sender: UITapGestureRecognizer) {
         
         view.endEditing(true)
         

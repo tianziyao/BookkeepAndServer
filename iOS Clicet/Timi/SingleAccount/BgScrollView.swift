@@ -10,7 +10,7 @@ import UIKit
 
 class BgScrollView: UIScrollView, UIGestureRecognizerDelegate {
     
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if self.contentOffset.x > 0 && self.contentOffset.x <= self.contentSize.width - self.bounds.width{
             return false
         }
@@ -19,8 +19,8 @@ class BgScrollView: UIScrollView, UIGestureRecognizerDelegate {
         }
     }
     
-    override func touchesShouldCancelInContentView(view: UIView) -> Bool {
-        if view.isKindOfClass(LineChartViewComponent){
+    override func touchesShouldCancel(in view: UIView) -> Bool {
+        if view.isKind(of: LineChartViewComponent.self){
             return false
         }
         return true

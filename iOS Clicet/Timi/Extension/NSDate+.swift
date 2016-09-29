@@ -8,37 +8,37 @@
 
 import UIKit
 
-extension NSDate{
-    class func intervalToChinaCalander(interval:NSTimeInterval) ->String{
-        let date = NSDate(timeIntervalSince1970: interval)
-        let cal = NSCalendar.currentCalendar()
-        let calCom = cal.components([.Year, .Month, .Day], fromDate: date)
+extension Date{
+    static func intervalToChinaCalander(_ interval:TimeInterval) ->String{
+        let date = Date(timeIntervalSince1970: interval)
+        let cal = Calendar.current
+        let calCom = (cal as NSCalendar).components([.year, .month, .day], from: date)
         let currentDate = "\(calCom.year)年\(calCom.month)月\(calCom.day)日"
         return currentDate
     }
-    class func intervalToDateComponent(interval:NSTimeInterval) -> NSDateComponents{
-        let date = NSDate(timeIntervalSince1970: interval)
+    static func intervalToDateComponent(_ interval:TimeInterval) -> DateComponents{
+        let date = Date(timeIntervalSince1970: interval)
         return dateToDateComponent(date)
     }
-    class func dateToDateComponent(date:NSDate) -> NSDateComponents{
-        let cal = NSCalendar.currentCalendar()
-        let calCom = cal.components([.Year, .Month, .Day], fromDate: date)
+    static func dateToDateComponent(_ date:Date) -> DateComponents{
+        let cal = Calendar.current
+        let calCom = (cal as NSCalendar).components([.year, .month, .day], from: date)
         return calCom
     }
     
-    class func numberOfDaysInMonthWithDate(date:NSDate)->Int{
-        let comp = NSCalendar.currentCalendar().rangeOfUnit(.Day, inUnit: .Month, forDate: date)
+    static func numberOfDaysInMonthWithDate(_ date:Date)->Int{
+        let comp = (Calendar.current as NSCalendar).range(of: .day, in: .month, for: date)
         return comp.length
     }
-    class func numberOfDaysInMonthWithInterval(interval:NSTimeInterval)->Int{
-        let date = NSDate(timeIntervalSince1970: interval)
+    static func numberOfDaysInMonthWithInterval(_ interval:TimeInterval)->Int{
+        let date = Date(timeIntervalSince1970: interval)
         return numberOfDaysInMonthWithDate(date)
     }
-    class func getFirstDayOfMonthWithDate(date:NSDate)->NSDate?{
-        let cal = NSCalendar.currentCalendar()
-        let comp = cal.components([.Year, .Month, .Day], fromDate: date)
+    static func getFirstDayOfMonthWithDate(_ date:Date)->Date?{
+        let cal = Calendar.current
+        var comp = (cal as NSCalendar).components([.year, .month, .day], from: date)
         comp.day = 1
-        return cal.dateFromComponents(comp)
+        return cal.date(from: comp)
     }
 }
 

@@ -14,7 +14,7 @@ protocol LimitInputViewProtocol{
 
 extension LimitInputVC: LimitInputViewProtocol{
     func clickBack(){
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -30,35 +30,35 @@ class LimitInputVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.white
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(LimitInputVC.keyboardWillShow(_:)),
-                                                         name: UIKeyboardWillShowNotification,
+        NotificationCenter.default.addObserver(self, selector: #selector(LimitInputVC.keyboardWillShow(_:)),
+                                                         name: NSNotification.Name.UIKeyboardWillShow,
                                                          object:self.view.window)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(LimitInputVC.keyboardWillHide(_:)),
-                                                         name: UIKeyboardWillHideNotification,
+        NotificationCenter.default.addObserver(self, selector: #selector(LimitInputVC.keyboardWillHide(_:)),
+                                                         name: NSNotification.Name.UIKeyboardWillHide,
                                                          object: self.view.window)
         setup()
 
     
     }
     
-    func keyboardWillShow(notification:NSNotification){
+    func keyboardWillShow(_ notification:Notification){
         if keyboardIsShow == true {
             return
         }
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             var frame = limitInput?.characterNum?.frame
             frame?.origin.y = (frame?.origin.y)! - keyboardSize.height
             limitInput?.characterNum?.frame = frame!
         }
         keyboardIsShow = true
     }
-    func keyboardWillHide(notification:NSNotification){
+    func keyboardWillHide(_ notification:Notification){
         if keyboardIsShow == false{
             return
         }
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.CGRectValue() {
+        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             var frame = limitInput?.characterNum?.frame
             frame?.origin.y = (frame?.origin.y)! + keyboardSize.height
             limitInput?.characterNum?.frame = frame!
@@ -66,7 +66,7 @@ class LimitInputVC: UIViewController {
         keyboardIsShow = false
     }
     
-    private func setup(){
+    fileprivate func setup(){
         let limitInput = LimitInputView(frame: self.view.frame)
         limitInput.delegate = self
         limitInput.initViewDate = initVCDate

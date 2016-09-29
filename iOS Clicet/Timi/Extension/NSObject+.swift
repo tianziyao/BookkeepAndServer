@@ -17,19 +17,19 @@ extension NSObject{
                 var count:UInt32 = 0
                 let properties = class_copyPropertyList(classType, &count)
                 for i in 0..<count{
-                    let property = properties[Int(i)]
-                    let propertyKey = String.fromCString(property_getName(property))!         //模型中属性名称
-                    let propertyType = String.fromCString(property_getAttributes(property))!  //模型中属性类型
+                    let property = properties?[Int(i)]
+                    let propertyKey = String(cString: property_getName(property))         //模型中属性名称
+                    let propertyType = String(cString: property_getAttributes(property))  //模型中属性类型
                     
                     if "description" == propertyKey{ continue }   //描述，不是属性
                     
-                    let tempValue:AnyObject!  = self.valueForKey(propertyKey)
+                    let tempValue:AnyObject!  = self.value(forKey: propertyKey) as AnyObject!
                     if  tempValue == nil { continue }
                     
                     if let _ =  HEFoundation.getType(propertyType) {         //1,自定义的类
-                        result[propertyKey] = tempValue.keyValues
-                    }else if (propertyType.containsString("NSArray")){       //2, 数组, 将数组中的模型转成字典
-                        result[propertyKey] = tempValue.keyValuesArray       //3， 基本数据
+                        result[propertyKey] = tempValue.keyValues as AnyObject?
+                    }else if (propertyType.contains("NSArray")){       //2, 数组, 将数组中的模型转成字典
+                        result[propertyKey] = tempValue.keyValuesArray as AnyObject?       //3， 基本数据
                     }else{
                         result[propertyKey] = tempValue
                     }
@@ -50,28 +50,28 @@ extension NSObject{
 class HEFoundation {
     
     static let set = NSSet(array: [
-        NSURL.classForCoder(),
-        NSDate.classForCoder(),
+        URL.classForCoder(),
+        Date.classForCoder(),
         NSValue.classForCoder(),
-        NSData.classForCoder(),
+        Data.classForCoder(),
         NSError.classForCoder(),
         NSArray.classForCoder(),
         NSDictionary.classForCoder(),
         NSString.classForCoder(),
         NSAttributedString.classForCoder()
         ])
-    static let  bundlePath = NSBundle.mainBundle().infoDictionary!["CFBundleExecutable"] as! String
+    static let  bundlePath = Bundle.main.infoDictionary!["CFBundleExecutable"] as! String
     
     /*** 判断某个类是否是 Foundation中自带的类 */
-    class func isClassFromFoundation(c:AnyClass)->Bool {
+    class func isClassFromFoundation(_ c:AnyClass)->Bool {
         var  result = false
         if c == NSObject.classForCoder(){
             result = true
         }else{
-            set.enumerateObjectsUsingBlock({ (foundation,  stop) -> Void in
-                if  c.isSubclassOfClass(foundation as! AnyClass) {
+            set.enumerateObjects({ (foundation,  stop) -> Void in
+                if  c.isSubclass(of: foundation as! AnyClass) {
                     result = true
-                    stop.initialize(true)
+                    stop.initialize(to: true)
                 }
             })
         }
@@ -84,22 +84,22 @@ class HEFoundation {
      到这个属性的类型是自定义的类时， 会得到下面的格式： T+@+"+..+工程的名字+数字+类名+"+,+其他,
      而我们想要的只是类名，所以要修改这个字符串
      */
-    class func getType(code:String)->String?{
+    class func getType(_ code:String)->String?{
         
-        if !code.containsString(bundlePath){ //不是自定义类
+        if !code.contains(bundlePath){ //不是自定义类
             return nil
         }
-        var code = code.componentsSeparatedByString("\"")[1]
-        if let range = code.rangeOfString(bundlePath){
-            code = code.substringFromIndex(range.endIndex)
+        var code = code.components(separatedBy: "\"")[1]
+        if let range = code.range(of: bundlePath){
+            code = code.substring(from: range.upperBound)
             var numStr = "" //类名前面的数字
             for c:Character in code.characters{
                 if c <= "9" && c >= "0"{
                     numStr+=String(c)
                 }
             }
-            if let numRange = code.rangeOfString(numStr){
-                code = code.substringFromIndex(numRange.endIndex)
+            if let numRange = code.range(of: numStr){
+                code = code.substring(from: numRange.upperBound)
             }
             return bundlePath+"."+code
         }
@@ -112,16 +112,16 @@ extension NSArray{  //数组的拓展
         get{
             var result = [AnyObject]()
             for item in self{
-                if !HEFoundation.isClassFromFoundation(item.classForCoder){ //1,自定义的类
-                    let subKeyValues:[String:AnyObject]! = item.keyValues
+                if !HEFoundation.isClassFromFoundation((item as AnyObject).classForCoder){ //1,自定义的类
+                    let subKeyValues:[String:AnyObject]! = (item as AnyObject).keyValues
                     if  subKeyValues == nil {continue}
-                    result.append(subKeyValues)
-                }else if item.classForCoder == NSArray.classForCoder(){    //2, 如果item 是数组
-                    let subKeyValues:[AnyObject]! = item.keyValuesArray
+                    result.append(subKeyValues as AnyObject)
+                }else if (item as AnyObject).classForCoder == NSArray.classForCoder(){    //2, 如果item 是数组
+                    let subKeyValues:[AnyObject]! = (item as AnyObject).keyValuesArray
                     if  subKeyValues == nil {continue}
-                    result.append(subKeyValues)
+                    result.append(subKeyValues as AnyObject)
                 }else{                                                     //3, 基本数据类型
-                    result.append(item)
+                    result.append(item as AnyObject)
                 }
             }
             if result.count == 0{

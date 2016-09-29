@@ -12,13 +12,13 @@ class LineChartView: AccountDisplayViewBase {
     
     weak var tableViewDelegate:SingleAccountVC!
     
-    private var monthDataTableView:UITableView!
-    private var lineChartHeight:CGFloat{
+    fileprivate var monthDataTableView:UITableView!
+    fileprivate var lineChartHeight:CGFloat{
         return (bounds.height - 160.0) / 2
     }
-    private var lineChart:LineChartViewComponent!
-    private var pointDataItem:[Float]!
-    private var infoDataItem:[LineChartInfoData]!
+    fileprivate var lineChart:LineChartViewComponent!
+    fileprivate var pointDataItem:[Float]!
+    fileprivate var infoDataItem:[LineChartInfoData]!
     
     //init (internal)
     init(frame:CGRect, infoDataItem:[LineChartInfoData]!, pointDataItem:[Float]!, delegate:AKPickerViewDelegate!, dataSource:AKPickerViewDataSource,tableViewDelegate:SingleAccountVC!){
@@ -33,7 +33,7 @@ class LineChartView: AccountDisplayViewBase {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func reloadLineChartViewData(infoDataItem:[LineChartInfoData]?, pointDataItem:[Float]?, year:String, cost:String?, income:String?){
+    func reloadLineChartViewData(_ infoDataItem:[LineChartInfoData]?, pointDataItem:[Float]?, year:String, cost:String?, income:String?){
         
         if let infoDataItem = infoDataItem{
             lineChart.infoDataItem = infoDataItem
@@ -53,12 +53,12 @@ class LineChartView: AccountDisplayViewBase {
     }
     
     //MARK: - setup views(private)
-    private func setupViews(frame:CGRect){
+    fileprivate func setupViews(_ frame:CGRect){
         setupLineChartView(CGRect(x: 0, y: 180, width: frame.width, height: lineChartHeight - 20))
         setupTableView(CGRect(x: 0, y: lineChartHeight + 160, width: frame.width, height: lineChartHeight))
     }
     
-    private func setupLineChartView(frame:CGRect){
+    fileprivate func setupLineChartView(_ frame:CGRect){
         lineChart = LineChartViewComponent(frame: frame, pointDataItem: pointDataItem, infoDataItem: infoDataItem)
         
         let sepLine = UIView(frame: CGRect(x: 0, y: frame.height - 1 + frame.origin.y, width: frame.width, height: 0.5))
@@ -68,13 +68,13 @@ class LineChartView: AccountDisplayViewBase {
         self.addSubview(sepLine)
     }
     
-    private func setupTableView(frame:CGRect){
+    fileprivate func setupTableView(_ frame:CGRect){
         
         let tableView = UITableView(frame: frame)
-        tableView.registerNib(UINib(nibName: "LineChartTableViewCell", bundle: nil), forCellReuseIdentifier: "LineChartTableViewCell")
+        tableView.register(UINib(nibName: "LineChartTableViewCell", bundle: nil), forCellReuseIdentifier: "LineChartTableViewCell")
         tableView.delegate = tableViewDelegate
         tableView.dataSource = tableViewDelegate
-        tableView.separatorStyle = .None
+        tableView.separatorStyle = .none
         monthDataTableView = tableView
         self.addSubview(tableView)
     }

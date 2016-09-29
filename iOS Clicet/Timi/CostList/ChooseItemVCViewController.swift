@@ -17,21 +17,21 @@ protocol ComputeBoardProtocol{
     func clickPhoto()
 }
 protocol ChooseItemProtocol{
-    func setCostBarIconAndTitle(icon:String, title:String)
+    func setCostBarIconAndTitle(_ icon:String, title:String)
 }
 
 protocol TopBarProtocol{
-    func clickBack(sender:AnyObject!)
+    func clickBack(_ sender:AnyObject!)
 }
 
 private let myContent = 0
 
 class ChooseItemVC: UIViewController, ChooseItemProtocol {
     
-    let ScreenWidth = UIScreen.mainScreen().bounds.width
-    let ScreenHeight = UIScreen.mainScreen().bounds.height
+    let ScreenWidth = UIScreen.main.bounds.width
+    let ScreenHeight = UIScreen.main.bounds.height
     
-    let ComputeBoardHeight =  UIScreen.mainScreen().bounds.height/2 - 20 + 72
+    let ComputeBoardHeight =  UIScreen.main.bounds.height/2 - 20 + 72
     
     let TopBarHeight: CGFloat = 44.0
     var computedBar:ComputeBoardView?
@@ -66,13 +66,13 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.whiteColor()
-        chooseItemModel.addObserver(self, forKeyPath: "costBarTime", options: [.New, .Old], context: nil)
-        chooseItemModel.addObserver(self, forKeyPath: "costBarIconName", options: [.New, .Old], context: nil)
-        chooseItemModel.addObserver(self, forKeyPath: "costBarTitle", options: [.New, .Old], context: nil)
-        chooseItemModel.addObserver(self, forKeyPath: "costBarMoney", options: [.New, .Old], context: nil)
-        chooseItemModel.addObserver(self, forKeyPath: "topBarRemark", options: [.New, .Old], context: nil)
-        chooseItemModel.addObserver(self, forKeyPath: "topBarPhotoName", options: [.New, .Old], context: nil)
+        self.view.backgroundColor = UIColor.white
+        chooseItemModel.addObserver(self, forKeyPath: "costBarTime", options: [.new, .old], context: nil)
+        chooseItemModel.addObserver(self, forKeyPath: "costBarIconName", options: [.new, .old], context: nil)
+        chooseItemModel.addObserver(self, forKeyPath: "costBarTitle", options: [.new, .old], context: nil)
+        chooseItemModel.addObserver(self, forKeyPath: "costBarMoney", options: [.new, .old], context: nil)
+        chooseItemModel.addObserver(self, forKeyPath: "topBarRemark", options: [.new, .old], context: nil)
+        chooseItemModel.addObserver(self, forKeyPath: "topBarPhotoName", options: [.new, .old], context: nil)
         //创建顶部栏
         setupTopBar()
         //创建图标项
@@ -90,7 +90,7 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
     //创建顶部栏
     func setupTopBar(){
         //底部栏
-        let topBar = TopBarView(frame: CGRectMake(0, 20, ScreenWidth, TopBarHeight))
+        let topBar = TopBarView(frame: CGRect(x: 0, y: 20, width: ScreenWidth, height: TopBarHeight))
         if chooseItemModel.topBarPhotoName != ""{
             topBar.topBarInitPhoto = UIImage.generateImageWithFileName(chooseItemModel.topBarPhotoName)
         }
@@ -103,7 +103,7 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
     //创建图标项
     func setupItem(){
         let ItemBarHeight = ScreenHeight - 20 - TopBarHeight - ComputeBoardHeight
-        let itemBar = ItemBarView(frame: CGRectMake(0, 20 + TopBarHeight , ScreenWidth, ItemBarHeight))
+        let itemBar = ItemBarView(frame: CGRect(x: 0, y: 20 + TopBarHeight , width: ScreenWidth, height: ItemBarHeight))
         itemBar.delegate = self
         self.view.addSubview(itemBar)
     }
@@ -111,7 +111,7 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
     //创建计算面板
     func setupComputeBoard(){
         //创建计算面板
-        let computeBoard = ComputeBoardView(frame: CGRectMake(0, ScreenHeight - ComputeBoardHeight, ScreenWidth, ComputeBoardHeight))
+        let computeBoard = ComputeBoardView(frame: CGRect(x: 0, y: ScreenHeight - ComputeBoardHeight, width: ScreenWidth, height: ComputeBoardHeight))
         computeBoard.delegate = self
         computeBoard.time = chooseItemModel.getCostBarTimeInString()
         computeBoard.icon = UIImage(named: chooseItemModel.costBarIconName)
@@ -150,7 +150,7 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
                                 dissmissCallback(item)
                             }
                         }
-                        NSNotificationCenter.defaultCenter().postNotificationName("ChangeDataSource", object: strongSelf)
+                        NotificationCenter.default.post(name: Notification.Name(rawValue: "ChangeDataSource"), object: strongSelf)
                         strongSelf.onPressBack()
                     }
                     
@@ -168,10 +168,10 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
     //时间选择器
     func setupDatePicker(){
         let datePickerView = CustomDatePicker(frame: self.view.frame, date: chooseItemModel.getCostBarTimeInDate(), cancel: nil, sure: nil)
-        datePickerView.hidden = true
+        datePickerView.isHidden = true
         datePickerView.cancelCallback = {[weak datePickerView] in
             if let strongDatePickerView = datePickerView{
-                strongDatePickerView.hidden = !strongDatePickerView.hidden
+                strongDatePickerView.isHidden = !strongDatePickerView.isHidden
             }
         }
         datePickerView.sureCallback = {[weak self](date)-> () in
@@ -185,16 +185,16 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
         self.view.addSubview(datePickerView)
     }
     
-    func setCostBarIconAndTitle(icon: String, title: String) {
+    func setCostBarIconAndTitle(_ icon: String, title: String) {
         chooseItemModel.costBarIconName = icon
         chooseItemModel.costBarTitle = title
     }
     
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         switch keyPath ?? "" {
         case "costBarTime":
             computedBar?.time = chooseItemModel.getCostBarTimeInString()
-            topBar?.topBarChangeTime?.setTitleColor(UIColor.orangeColor(), forState: .Normal)
+            topBar?.topBarChangeTime?.setTitleColor(UIColor.orange, for: UIControlState())
         case "costBarIconName":
             computedBar?.icon = UIImage(named:chooseItemModel.costBarIconName)
         case "costBarTitle":
@@ -202,26 +202,26 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
         case "costBarMoney":
             computedBar?.money = chooseItemModel.costBarMoney
         case "topBarRemark":
-            if let newValue = change?[NSKeyValueChangeNewKey]{
+            if let newValue = change?[NSKeyValueChangeKey.newKey]{
                 if newValue as! String == ""{
-                    topBar?.topBarAddRemark?.setTitleColor(UIColor.blackColor(), forState: .Normal)
+                    topBar?.topBarAddRemark?.setTitleColor(UIColor.black, for: UIControlState())
                 }
                 else{
-                    topBar?.topBarAddRemark?.setTitleColor(UIColor.orangeColor(), forState: .Normal)
+                    topBar?.topBarAddRemark?.setTitleColor(UIColor.orange, for: UIControlState())
                 }
             }
         case "topBarPhotoName":
-            if let newValue = change?[NSKeyValueChangeNewKey]{
+            if let newValue = change?[NSKeyValueChangeKey.newKey]{
                 let value = newValue as! String
                 if value == ""{
-                    topBar?.topBarTakePhoto?.hidden = false
-                    topBar?.topBarTakePhotoImage?.hidden = true
+                    topBar?.topBarTakePhoto?.isHidden = false
+                    topBar?.topBarTakePhotoImage?.isHidden = true
                 }
                 else{
                     if let image = UIImage.generateImageWithFileName(value){
-                        topBar?.topBarTakePhotoImage?.setImage(image, forState: .Normal)
-                        topBar?.topBarTakePhoto?.hidden = true
-                        topBar?.topBarTakePhotoImage?.hidden = false
+                        topBar?.topBarTakePhotoImage?.setImage(image, for: UIControlState())
+                        topBar?.topBarTakePhoto?.isHidden = true
+                        topBar?.topBarTakePhotoImage?.isHidden = false
                     }
                 }
             }
@@ -233,51 +233,51 @@ class ChooseItemVC: UIViewController, ChooseItemProtocol {
 }
 
 extension ChooseItemVC: TopBarProtocol{
-    func clickBack(sender:AnyObject!){
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func clickBack(_ sender:AnyObject!){
+        self.dismiss(animated: true, completion: nil)
     }
     func clickTime(){
-        self.datePicker?.hidden = !self.datePicker!.hidden
+        self.datePicker?.isHidden = !self.datePicker!.isHidden
     }
     func clickRemark() {
         let limitInputVC = LimitInputVC()
         limitInputVC.initVCDate = chooseItemModel.getCostBarTimeInString()
         limitInputVC.text = chooseItemModel.topBarRemark
         limitInputVC.completeInput = {(text) in self.chooseItemModel.topBarRemark = text}
-        self.presentViewController(limitInputVC, animated: true, completion: nil)
+        self.present(limitInputVC, animated: true, completion: nil)
     }
     func clickPhoto() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        imagePicker.sourceType = .PhotoLibrary
+        imagePicker.sourceType = .photoLibrary
         imagePicker.allowsEditing = true
-        presentViewController(imagePicker, animated: true, completion: nil)
+        present(imagePicker, animated: true, completion: nil)
     }
 }
 extension ChooseItemVC: ComputeBoardProtocol{
     func onPressBack() {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         
     }
 }
 
 extension ChooseItemVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
         
         //转为二进制，压缩
         let imageData = UIImage.cropAndCompressImage(image, scale: 0.5, compressionQualiy: 0.7)
         //生成文件名
-        let imageName = "AccountPhoto/image-" + String(NSDate().timeIntervalSince1970)
+        let imageName = "AccountPhoto/image-" + String(Date().timeIntervalSince1970)
         //生成路径
         let imagePath = String.createFilePathInDocumentWith(imageName) ?? ""
         //写入文件
-        if imageData?.writeToFile(imagePath, atomically: false) == true {
+        if ((try? imageData?.write(to: URL(fileURLWithPath: imagePath), options: [])) != nil) == true {
             chooseItemModel.topBarPhotoName = imageName
         }
         else{
             print("write AccountImage failed!")
         }
-        picker.dismissViewControllerAnimated(true, completion: nil)
+        picker.dismiss(animated: true, completion: nil)
     }
 }
 

@@ -20,9 +20,9 @@ class TopBarView: UIView {
             return topBarTakePhotoImage?.imageView?.image
         }
         set(newValue){
-            topBarTakePhotoImage?.setImage(newValue, forState: .Normal)
-            topBarTakePhotoImage?.hidden = false
-            topBarTakePhoto?.hidden = true
+            topBarTakePhotoImage?.setImage(newValue, for: UIControlState())
+            topBarTakePhotoImage?.isHidden = false
+            topBarTakePhoto?.isHidden = true
         }
     }
     //自定义初始化方法
@@ -40,9 +40,9 @@ class TopBarView: UIView {
         let TopBarHeight = self.frame.height
         
         //返回
-        let topBarBack = UIButton(frame: CGRectMake(20, 10, 22, 22))
-        topBarBack.setImage(UIImage(named: "back_light"), forState: UIControlState.Normal)
-        topBarBack.addTarget(self, action: #selector(TopBarView.back(_:)), forControlEvents: .TouchUpInside)
+        let topBarBack = UIButton(frame: CGRect(x: 20, y: 10, width: 22, height: 22))
+        topBarBack.setImage(UIImage(named: "back_light"), for: UIControlState())
+        topBarBack.addTarget(self, action: #selector(TopBarView.back(_:)), for: .touchUpInside)
         //改时间
         let topBarChangeTime = createTopBarBtn(num: 1, title: "改时间", target: self, action: #selector(TopBarView.ChangeTimePress(_:)))
         self.topBarChangeTime = topBarChangeTime
@@ -55,15 +55,15 @@ class TopBarView: UIView {
         let topBarTakePhoto = createTopBarBtn(num: 3, title: "加照片", target: self, action: #selector(TopBarView.TakePhotoPress(_:)))
         self.topBarTakePhoto = topBarTakePhoto
         
-        let topBarTakePhotoImage = UIButton(frame: CGRectMake(self.frame.width/4 * 3 + 25 , 5, self.frame.height - 10, self.frame.height - 10 ))
+        let topBarTakePhotoImage = UIButton(frame: CGRect(x: self.frame.width/4 * 3 + 25 , y: 5, width: self.frame.height - 10, height: self.frame.height - 10 ))
         topBarTakePhotoImage.layer.cornerRadius = (self.frame.height - 10) / 2
         topBarTakePhotoImage.clipsToBounds = true
-        topBarTakePhotoImage.hidden = true
-        topBarTakePhotoImage.addTarget(self, action: #selector(TopBarView.TakePhotoPress(_:)), forControlEvents: .TouchUpInside)
+        topBarTakePhotoImage.isHidden = true
+        topBarTakePhotoImage.addTarget(self, action: #selector(TopBarView.TakePhotoPress(_:)), for: .touchUpInside)
         self.topBarTakePhotoImage = topBarTakePhotoImage
         
         //分割线
-        let topBarSepLine = UIView(frame: CGRectMake(0, TopBarHeight - 0.5, TopBarWidth, 0.5))
+        let topBarSepLine = UIView(frame: CGRect(x: 0, y: TopBarHeight - 0.5, width: TopBarWidth, height: 0.5))
         topBarSepLine.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.7)
         
         //添加到topBar上
@@ -75,35 +75,35 @@ class TopBarView: UIView {
         self.addSubview(topBarSepLine)
     }
     
-    private func createTopBarBtn(num number:CGFloat, title:String, target:AnyObject, action:Selector) -> UIButton{
+    fileprivate func createTopBarBtn(num number:CGFloat, title:String, target:AnyObject, action:Selector) -> UIButton{
         
-        let btn = UIButton(frame: CGRectMake(self.frame.width/4 * number, 0, self.frame.width/4, self.frame.height))
-        btn.setTitle(title, forState: UIControlState.Normal)
+        let btn = UIButton(frame: CGRect(x: self.frame.width/4 * number, y: 0, width: self.frame.width/4, height: self.frame.height))
+        btn.setTitle(title, for: UIControlState())
         btn.titleLabel?.font = UIFont(name: "Courier New", size: 14)
-        btn.setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal)
-        btn.setTitleColor(UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0), forState: UIControlState.Highlighted)
-        btn.addTarget(self, action: action, forControlEvents: .TouchUpInside)
+        btn.setTitleColor(UIColor.black, for: UIControlState())
+        btn.setTitleColor(UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0), for: UIControlState.highlighted)
+        btn.addTarget(self, action: action, for: .touchUpInside)
         return btn
     }
     
-    func back(sender:AnyObject!){
-        if delegate?.respondsToSelector(#selector(ChooseItemVC.clickBack(_:))) != nil{
+    func back(_ sender:AnyObject!){
+        if delegate?.responds(to: #selector(ChooseItemVC.clickBack(_:))) != nil{
             delegate?.clickBack(sender)
         }
     }
     
-    func ChangeTimePress(btn: UIButton?){
-        if delegate?.respondsToSelector(#selector(ChooseItemVC.clickTime)) != nil{
+    func ChangeTimePress(_ btn: UIButton?){
+        if delegate?.responds(to: #selector(ChooseItemVC.clickTime)) != nil{
             delegate?.clickTime()
         }
     }
-    func AddRemarkPress(btn: UIButton?){
-        if delegate?.respondsToSelector(#selector(ChooseItemVC.clickRemark)) != nil{
+    func AddRemarkPress(_ btn: UIButton?){
+        if delegate?.responds(to: #selector(ChooseItemVC.clickRemark)) != nil{
             delegate?.clickRemark()
         }
     }
-    func TakePhotoPress(btn: UIButton?){
-        if delegate?.respondsToSelector(#selector(ChooseItemVC.clickRemark)) != nil{
+    func TakePhotoPress(_ btn: UIButton?){
+        if delegate?.responds(to: #selector(ChooseItemVC.clickRemark)) != nil{
             delegate?.clickPhoto()
         }
     }

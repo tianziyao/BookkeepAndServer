@@ -25,19 +25,19 @@ class AccountBookBtn:NSObject, NSCoding{
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        guard let btnTitle = aDecoder.decodeObjectForKey("btnTitle") as? String ,
-            let count = aDecoder.decodeObjectForKey("accountCount") as? String,
-            let image = aDecoder.decodeObjectForKey("backgrountImageName") as? String,
-            let dbName = aDecoder.decodeObjectForKey("dataBaseName") as? String
+        guard let btnTitle = aDecoder.decodeObject(forKey: "btnTitle") as? String ,
+            let count = aDecoder.decodeObject(forKey: "accountCount") as? String,
+            let image = aDecoder.decodeObject(forKey: "backgrountImageName") as? String,
+            let dbName = aDecoder.decodeObject(forKey: "dataBaseName") as? String
             else{ return nil }
-        self.init(title: btnTitle , count: count, image: image, flag: aDecoder.decodeBoolForKey("selectedFlag"), dbName: dbName)
+        self.init(title: btnTitle , count: count, image: image, flag: aDecoder.decodeBool(forKey: "selectedFlag"), dbName: dbName)
     }
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(self.btnTitle, forKey: "btnTitle")
-        aCoder.encodeObject(self.accountCount, forKey: "accountCount")
-        aCoder.encodeObject(self.backgrountImageName, forKey: "backgrountImageName")
-        aCoder.encodeBool(self.selectedFlag, forKey: "selectedFlag")
-        aCoder.encodeObject(self.dataBaseName, forKey: "dataBaseName")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(self.btnTitle, forKey: "btnTitle")
+        aCoder.encode(self.accountCount, forKey: "accountCount")
+        aCoder.encode(self.backgrountImageName, forKey: "backgrountImageName")
+        aCoder.encode(self.selectedFlag, forKey: "selectedFlag")
+        aCoder.encode(self.dataBaseName, forKey: "dataBaseName")
     }
 }
 
@@ -56,9 +56,9 @@ class MainVCModel:NSObject{
         super.init()
         self.initWithAccountsBtns()
     }
-    private func initWithAccountsBtns(){
+    fileprivate func initWithAccountsBtns(){
         let path = String.createFilePathInDocumentWith(firmAccountPath) ?? ""
-        if let accountsBtns = NSKeyedUnarchiver.unarchiveObjectWithFile(path) as? [AccountBookBtn]{
+        if let accountsBtns = NSKeyedUnarchiver.unarchiveObject(withFile: path) as? [AccountBookBtn]{
             for i in 0...accountsBtns.count - 2{
                 accountsBtns[i].accountCount = String(AccoutDB.itemCount(accountsBtns[i].dataBaseName))+"笔"
             }
@@ -72,7 +72,7 @@ class MainVCModel:NSObject{
     func reloadModelData(){
         //更新按钮的itemCount
         let path = String.createFilePathInDocumentWith(firmAccountPath) ?? ""
-        if let accountsBtns = NSKeyedUnarchiver.unarchiveObjectWithFile(path) as? [AccountBookBtn]{
+        if let accountsBtns = NSKeyedUnarchiver.unarchiveObject(withFile: path) as? [AccountBookBtn]{
             for i in 0...accountsBtns.count - 2{
                 accountsBtns[i].accountCount = String(AccoutDB.itemCount(accountsBtns[i].dataBaseName))+"笔"
             }
@@ -86,7 +86,7 @@ class MainVCModel:NSObject{
     }
     
     //更新数组中的flag，互斥
-    func showFlagWithIndex(index:Int){
+    func showFlagWithIndex(_ index:Int){
         for i in 0...accountsBtns.count - 1{
             if i == index{
                 accountsBtns[i].selectedFlag = true
@@ -100,27 +100,27 @@ class MainVCModel:NSObject{
     }
     
     //查找
-    func getItemInfoAtIndex(i:Int)->AccountBookBtn?{
+    func getItemInfoAtIndex(_ i:Int)->AccountBookBtn?{
         guard i < accountsBtns.count else{return nil}
         return accountsBtns[i]
     }
     //增加
-    func addBookItemByAppend(item:AccountBookBtn){
-        accountsBtns.insert(item, atIndex: accountsBtns.count - 1)
+    func addBookItemByAppend(_ item:AccountBookBtn){
+        accountsBtns.insert(item, at: accountsBtns.count - 1)
         NSKeyedArchiver.archiveRootObject(accountsBtns, toFile: UniqAccountPath)
     }
     //删除
-    func removeBookItemAtIndex(i:Int){
+    func removeBookItemAtIndex(_ i:Int){
         if i < accountsBtns.count{
-            accountsBtns.removeAtIndex(i)
+            accountsBtns.remove(at: i)
             NSKeyedArchiver.archiveRootObject(accountsBtns, toFile: UniqAccountPath)
         }
     }
     //更新
-    func updateBookItem(item:AccountBookBtn, atIndex index:Int){
+    func updateBookItem(_ item:AccountBookBtn, atIndex index:Int){
         if index < accountsBtns.count{
             removeBookItemAtIndex(index)
-            accountsBtns.insert(item, atIndex: index)
+            accountsBtns.insert(item, at: index)
             NSKeyedArchiver.archiveRootObject(accountsBtns, toFile: UniqAccountPath)
         }
     }

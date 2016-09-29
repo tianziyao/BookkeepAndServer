@@ -10,13 +10,13 @@ import UIKit
 
 class FlagBtn: UIButton {
     
-    private var flagImage:UIImageView = UIImageView()
+    fileprivate var flagImage:UIImageView = UIImageView()
     var showFlag:Bool{
         get{
-            return !flagImage.hidden
+            return !flagImage.isHidden
         }
         set(newValue){
-            flagImage.hidden = !newValue
+            flagImage.isHidden = !newValue
         }
     }
     
@@ -24,12 +24,12 @@ class FlagBtn: UIButton {
         super.init(frame: frame)
         setupFlag(frame)
     }
-    private func setupFlag(frame:CGRect){
+    fileprivate func setupFlag(_ frame:CGRect){
         let flagWidth = frame.width / 4
         let flagHeight = frame.height / 3
-        let flagImage = UIImageView(frame: CGRectMake(10, 0, flagWidth, flagHeight))
+        let flagImage = UIImageView(frame: CGRect(x: 10, y: 0, width: flagWidth, height: flagHeight))
         flagImage.image = UIImage(named: "menu_selected_icon")
-        flagImage.hidden = true
+        flagImage.isHidden = true
         self.flagImage = flagImage
         self.addSubview(flagImage)
     }

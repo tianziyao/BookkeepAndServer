@@ -31,7 +31,7 @@ class ItemBarView: UIView {
     }
     
     func setup(){
-        if NSFileManager.defaultManager().fileExistsAtPath(String.createFilePathInDocumentWith("DatabaseDoc/TypeBtn.db") ?? "") {
+        if FileManager.default.fileExists(atPath: String.createFilePathInDocumentWith("DatabaseDoc/TypeBtn.db") ?? "") {
             return
             
         }
@@ -90,7 +90,7 @@ class ItemBarView: UIView {
         let ItemWidth = ItemBarWidth / 5.0
         let ItemHeight = ItemBarHeight / 2.0
         //创建一个ScrollView
-        let itemBar = setupScrollView(CGRectMake(0, 0, ItemBarWidth, ItemBarHeight))
+        let itemBar = setupScrollView(CGRect(x: 0, y: 0, width: ItemBarWidth, height: ItemBarHeight))
         
         //根据数据库ID的数目创建对应的btn
         var index = 0
@@ -118,7 +118,7 @@ class ItemBarView: UIView {
                 for column in 0 ..< (page > 1 ? 5 : tmpRowCount){
                     //修改X偏移量
                     itemX = CGFloat(column) * ItemWidth + CGFloat(pageX) * ItemBarWidth
-                    let itemView = createItemView(index, item: self.items[index], frame: CGRectMake(itemX, itemY, ItemWidth, ItemHeight))
+                    let itemView = createItemView(index, item: self.items[index], frame: CGRect(x: itemX, y: itemY, width: ItemWidth, height: ItemHeight))
                     itemBar.addSubview(itemView)
                     index += 1
                 }
@@ -133,11 +133,11 @@ class ItemBarView: UIView {
         self.addSubview(itemBar)
     }
     
-    private func setupScrollView(frame: CGRect) -> UIScrollView{
+    fileprivate func setupScrollView(_ frame: CGRect) -> UIScrollView{
         //创建一个ScrollView
         let itemBar = UIScrollView(frame: frame)
-        itemBar.contentSize = CGSizeMake(frame.width * CGFloat(4), frame.height)
-        itemBar.pagingEnabled = true
+        itemBar.contentSize = CGSize(width: frame.width * CGFloat(4), height: frame.height)
+        itemBar.isPagingEnabled = true
         
         return itemBar
     }
@@ -153,28 +153,28 @@ class ItemBarView: UIView {
         }
     }
     
-    private func createItemView(index:Int ,item:btnModel,frame:CGRect)->UIView{
+    fileprivate func createItemView(_ index:Int ,item:btnModel,frame:CGRect)->UIView{
         
         let itemView = UIView(frame: frame)
         
         //添加icon
         let iconWidth = frame.width - CGFloat(2) * IconMarginLeft
-        let icon = UIButton(frame: CGRectMake(IconMarginLeft, IconMarginTop, iconWidth, iconWidth))
-        icon.setImage(UIImage(named: item.imageName as String), forState: .Normal)
+        let icon = UIButton(frame: CGRect(x: IconMarginLeft, y: IconMarginTop, width: iconWidth, height: iconWidth))
+        icon.setImage(UIImage(named: item.imageName as String), for: UIControlState())
         icon.tag = index
-        icon.addTarget(self, action: #selector(ItemBarView.itemPress(_:)), forControlEvents: .TouchUpInside)
+        icon.addTarget(self, action: #selector(ItemBarView.itemPress(_:)), for: .touchUpInside)
         //添加title
         let titleHeight = frame.height - iconWidth - CGFloat(2) * IconMarginTop - TitleMarginTop
         let titleY = frame.height - TitleMarginTop - titleHeight
-        let title = UILabel(frame: CGRectMake(TitleMarginLeft, titleY, iconWidth, titleHeight))
+        let title = UILabel(frame: CGRect(x: TitleMarginLeft, y: titleY, width: iconWidth, height: titleHeight))
         title.text = item.iconTitle as String
-        title.textAlignment = .Center
+        title.textAlignment = .center
         //添加到itemView中
         itemView.addSubview(icon)
         itemView.addSubview(title)
         return itemView
     }
-    func itemPress(sender:UIButton){
+    func itemPress(_ sender:UIButton){
         let item = self.items[sender.tag]
         delegate?.setCostBarIconAndTitle(item.imageName as String, title: item.iconTitle as String)
     }

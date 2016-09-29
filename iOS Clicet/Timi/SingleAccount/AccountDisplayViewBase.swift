@@ -37,7 +37,7 @@ class AccountDisplayViewBase: UIView {
             return costBtn.titleLabel?.text ?? ""
         }
         set(newValue){
-            costBtn.setTitle("\(newValue)", forState: .Normal)
+            costBtn.setTitle("\(newValue)", for: UIControlState())
         }
     }
     
@@ -46,23 +46,23 @@ class AccountDisplayViewBase: UIView {
             return incomeBtn.titleLabel?.text ?? ""
         }
         set(newValue){
-            incomeBtn.setTitle("\(newValue)", forState: .Normal)
+            incomeBtn.setTitle("\(newValue)", for: UIControlState())
         }
     }
     
     //MARK: - properties (private)
-    private var incomeBtn:UIButton!
-    private var costBtn:UIButton!
-    private var yearLabel:UILabel!
+    fileprivate var incomeBtn:UIButton!
+    fileprivate var costBtn:UIButton!
+    fileprivate var yearLabel:UILabel!
     
     //    private var rotateBtn:UIButton!
-    private var pickerView:AKPickerView!
-    private var containerLayer:CAShapeLayer!
+    fileprivate var pickerView:AKPickerView!
+    fileprivate var containerLayer:CAShapeLayer!
     
-    private var radius:CGFloat {
+    fileprivate var radius:CGFloat {
         return self.frame.width / 4
     }
-    private var layerWidth:CGFloat{
+    fileprivate var layerWidth:CGFloat{
         return self.frame.width / 2
     }
     
@@ -81,42 +81,42 @@ class AccountDisplayViewBase: UIView {
     
     //MARK: - operations (internal)
     
-    func selectedIncome(sender:UIButton){
-        sender.selected = !sender.selected
-        costBtn.selected = !sender.selected
+    func selectedIncome(_ sender:UIButton){
+        sender.isSelected = !sender.isSelected
+        costBtn.isSelected = !sender.isSelected
     }
-    func selectedCost(sender:UIButton){
-        sender.selected = !sender.selected
-        incomeBtn.selected = !sender.selected
+    func selectedCost(_ sender:UIButton){
+        sender.isSelected = !sender.isSelected
+        incomeBtn.isSelected = !sender.isSelected
     }
     
-    func setYear(year:String){
+    func setYear(_ year:String){
         self.yearLabel.text = year
         self.yearLabel.sizeToFit()
-        self.yearLabel.center = CGPointMake(frame.width / 2, 80)
+        self.yearLabel.center = CGPoint(x: frame.width / 2, y: 80)
     }
     
     //MARK: - setupViews (private)
-    private func setupViews(frame:CGRect){
+    fileprivate func setupViews(_ frame:CGRect){
         let incomeAndCostBtnHeight:CGFloat = 80
         
-        setupIncomeAndCostBtn(CGRectMake(0, 0, frame.width, incomeAndCostBtnHeight))
-        setupScrollMonthView(CGRectMake(0, incomeAndCostBtnHeight, frame.width, incomeAndCostBtnHeight))
+        setupIncomeAndCostBtn(CGRect(x: 0, y: 0, width: frame.width, height: incomeAndCostBtnHeight))
+        setupScrollMonthView(CGRect(x: 0, y: incomeAndCostBtnHeight, width: frame.width, height: incomeAndCostBtnHeight))
     }
     
-    private  func setupIncomeAndCostBtn(frame:CGRect){
+    fileprivate  func setupIncomeAndCostBtn(_ frame:CGRect){
         
         let btnWidth:CGFloat = 75
         let btnMargin:CGFloat = 15
         let bgView = UIView(frame: frame)
         
-        let incomeBtn = createBtn(CGRectMake(btnMargin, btnMargin, btnWidth, btnWidth), title:"总收入\n0.00", action:#selector(AccountDisplayViewBase.selectedIncome(_:)))
+        let incomeBtn = createBtn(CGRect(x: btnMargin, y: btnMargin, width: btnWidth, height: btnWidth), title:"总收入\n0.00", action:#selector(AccountDisplayViewBase.selectedIncome(_:)))
         self.incomeBtn = incomeBtn
-        let costBtn = createBtn(CGRectMake(frame.width - btnMargin - btnWidth, btnMargin, btnWidth, btnWidth), title:"总支出\n9384.00", action:#selector(AccountDisplayViewBase.selectedCost(_:)))
-        costBtn.titleLabel?.textAlignment = .Right
-        costBtn.selected = true
+        let costBtn = createBtn(CGRect(x: frame.width - btnMargin - btnWidth, y: btnMargin, width: btnWidth, height: btnWidth), title:"总支出\n9384.00", action:#selector(AccountDisplayViewBase.selectedCost(_:)))
+        costBtn.titleLabel?.textAlignment = .right
+        costBtn.isSelected = true
         self.costBtn = costBtn
-        let sepline = UIView(frame: CGRectMake(0, frame.height, frame.width, sepLineHeight))
+        let sepline = UIView(frame: CGRect(x: 0, y: frame.height, width: frame.width, height: sepLineHeight))
         sepline.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
         
         bgView.addSubview(sepline)
@@ -124,41 +124,41 @@ class AccountDisplayViewBase: UIView {
         bgView.addSubview(costBtn)
         self.addSubview(bgView)
     }
-    private func createBtn(frame:CGRect, title:String, action:Selector)->UIButton{
+    fileprivate func createBtn(_ frame:CGRect, title:String, action:Selector)->UIButton{
         let btn = UIButton(frame: frame)
-        btn.setTitle(title, forState: .Normal)
+        btn.setTitle(title, for: UIControlState())
         btn.titleLabel?.numberOfLines = 2
-        btn.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        btn.setTitleColor(UIColor.orangeColor(), forState: .Selected)
-        btn.addTarget(self, action: action, forControlEvents: .TouchUpInside)
+        btn.setTitleColor(UIColor.black, for: UIControlState())
+        btn.setTitleColor(UIColor.orange, for: .selected)
+        btn.addTarget(self, action: action, for: .touchUpInside)
         return btn
     }
     
-    private  func setupScrollMonthView(frame:CGRect){
+    fileprivate  func setupScrollMonthView(_ frame:CGRect){
         
         let bgView = UIView(frame: frame)
         
-        let pickerView = AKPickerView(frame: CGRectMake(0, 80, frame.width, frame.height))
+        let pickerView = AKPickerView(frame: CGRect(x: 0, y: 80, width: frame.width, height: frame.height))
         pickerView.delegate = pickerDelegate
         pickerView.dataSource = pickerDataSource
         pickerView.font = UIFont(name: "HelveticaNeue-Light", size: 20)!
         pickerView.highlightedFont = UIFont(name: "HelveticaNeue", size: 20)!
-        pickerView.pickerViewStyle = .Wheel
+        pickerView.pickerViewStyle = .wheel
         pickerView.maskDisabled = false
-        pickerView.highlightedTextColor = UIColor.orangeColor()
+        pickerView.highlightedTextColor = UIColor.orange
         pickerView.interitemSpacing = 20
         pickerView.reloadData()
         pickerView.selectItem(0)
         self.pickerView = pickerView
         
-        let sepline = UIView(frame: CGRectMake(0, frame.height, frame.width, sepLineHeight))
+        let sepline = UIView(frame: CGRect(x: 0, y: frame.height, width: frame.width, height: sepLineHeight))
         sepline.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
         
-        let yearLabel = UILabel(frame: CGRectMake(0, 0, yearLabelWidth, yearLabelHeight))
-        yearLabel.center = CGPointMake(frame.width / 2, frame.height)
-        yearLabel.backgroundColor = UIColor.whiteColor()
+        let yearLabel = UILabel(frame: CGRect(x: 0, y: 0, width: yearLabelWidth, height: yearLabelHeight))
+        yearLabel.center = CGPoint(x: frame.width / 2, y: frame.height)
+        yearLabel.backgroundColor = UIColor.white
         yearLabel.textColor = UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1.0)
-        yearLabel.textAlignment = .Center
+        yearLabel.textAlignment = .center
         yearLabel.font = UIFont(name: "HelveticaNeue-Light", size: 14)
         yearLabel.text = "1900年"
         self.yearLabel = yearLabel

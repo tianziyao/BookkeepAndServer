@@ -23,18 +23,18 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
     var pointDataItem:[Float]!
     var infoDataItem:[LineChartInfoData]!
     
-    private var backColumnAverWidth:CGFloat{
+    fileprivate var backColumnAverWidth:CGFloat{
         return bounds.width / CGFloat(backColumnLineCount + 1)
     }
-    private var backColumnAverHeight:CGFloat{
+    fileprivate var backColumnAverHeight:CGFloat{
         return bounds.height - chartTop - chartBottom
     }
     
-    private var weekLabel:UILabel!
-    private var dateLabel:UILabel!
-    private var moneyLabel:UILabel!
-    private var curPosLabel:UILabel!
-    private var infoView:UIView!
+    fileprivate var weekLabel:UILabel!
+    fileprivate var dateLabel:UILabel!
+    fileprivate var moneyLabel:UILabel!
+    fileprivate var curPosLabel:UILabel!
+    fileprivate var infoView:UIView!
     
     
     //init
@@ -42,7 +42,7 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
         self.pointDataItem = pointDataItem
         self.infoDataItem = infoDataItem
         super.init(frame: frame)
-        self.backgroundColor = UIColor.whiteColor()
+        self.backgroundColor = UIColor.white
         setupInfoView(frame)
     }
     
@@ -50,33 +50,33 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touched = touches.first
-        if let location = touched?.locationInView(self){
+        if let location = touched?.location(in: self){
             showInfoView(location)
         }
         
-        infoView.hidden = false
-        curPosLabel.hidden = false
+        infoView.isHidden = false
+        curPosLabel.isHidden = false
     }
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        infoView.hidden = true
-        curPosLabel.hidden = true
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        infoView.isHidden = true
+        curPosLabel.isHidden = true
     }
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touched = touches.first
         
-        if let location = touched?.locationInView(self){
+        if let location = touched?.location(in: self){
             showInfoView(location)
         }
         
     }
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        infoView.hidden = true
-        curPosLabel.hidden = true
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        infoView.isHidden = true
+        curPosLabel.isHidden = true
     }
     
-    func showInfoView(point:CGPoint){
+    func showInfoView(_ point:CGPoint){
         let backColumnAverWidth = self.backColumnAverWidth
         
         var num = round((point.x)/backColumnAverWidth)
@@ -103,7 +103,7 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
         weekLabel.text = item.week
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         //draw back column line
         let backColumnAverWidth = self.backColumnAverWidth
         let backColumnAverHeight = self.backColumnAverHeight
@@ -115,20 +115,20 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
         let backPath = UIBezierPath()
         for i in 1...backColumnLineCount{
             let columnX = backColumnAverWidth * CGFloat(i)
-            backPath.moveToPoint(CGPoint(x: columnX, y: 0))
-            backPath.addLineToPoint(CGPoint(x: columnX, y: backColumnAverHeight))
+            backPath.move(to: CGPoint(x: columnX, y: 0))
+            backPath.addLine(to: CGPoint(x: columnX, y: backColumnAverHeight))
         }
         UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 0.7).setStroke()
         backPath.stroke()
         
         //linePath
-        CGContextSaveGState(context)
+        context?.saveGState()
         
         let linePath = UIBezierPath()
         let columnXPoint = {(i:Int)-> CGFloat in
             return  backColumnAverWidth * CGFloat(i + 1)
         }
-        var maxElement = pointDataItem.maxElement() ?? 0
+        var maxElement = pointDataItem.max() ?? 0
         if maxElement == 0{
             maxElement = 1
         }
@@ -138,14 +138,14 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
             return y
         }
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .Center
+        paragraphStyle.alignment = .center
         let attrs = [NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 16)!,
                      NSParagraphStyleAttributeName: paragraphStyle,
                      NSForegroundColorAttributeName: UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1)]
         for i in 0..<pointCount{
-            linePath.moveToPoint(CGPoint(x: columnXPoint(i), y: columnYPoint(i)))
+            linePath.move(to: CGPoint(x: columnXPoint(i), y: columnYPoint(i)))
             if i + 1 < pointCount{
-                linePath.addLineToPoint(CGPoint(x: columnXPoint(i + 1), y: columnYPoint(i + 1)))
+                linePath.addLine(to: CGPoint(x: columnXPoint(i + 1), y: columnYPoint(i + 1)))
             }
             
             var labelOrigin = CGPoint(x: columnXPoint(i), y: backColumnAverHeight + 10)
@@ -154,25 +154,25 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
                 if i % 3 == 0 && i < 27{
                     //draw num label
                     let label = NSString(format: "%d", i + 1)
-                    label.drawInRect(CGRect(origin: labelOrigin, size: CGSize(width: labelWidth, height: labelHeight)), withAttributes: attrs)
+                    label.draw(in: CGRect(origin: labelOrigin, size: CGSize(width: labelWidth, height: labelHeight)), withAttributes: attrs)
                 }
                 if i == pointCount - 1{
                     //draw num label
                     let label = NSString(format: "%d", i + 1)
-                    label.drawInRect(CGRect(origin: labelOrigin, size: CGSize(width: labelWidth, height: labelHeight)), withAttributes: attrs)
+                    label.draw(in: CGRect(origin: labelOrigin, size: CGSize(width: labelWidth, height: labelHeight)), withAttributes: attrs)
                 }
             }
             else{
                 if i % 3 == 0 || i == pointCount - 1{
                     let label = NSString(format: "%d", i + 1)
-                    label.drawInRect(CGRect(origin: labelOrigin, size: CGSize(width: labelWidth, height: labelHeight)), withAttributes: attrs)
+                    label.draw(in: CGRect(origin: labelOrigin, size: CGSize(width: labelWidth, height: labelHeight)), withAttributes: attrs)
                 }
             }
         }
         UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 0.7).setStroke()
         linePath.stroke()
         
-        CGContextRestoreGState(context)
+        context?.restoreGState()
         
         //dotPath
         UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 0.7).setStroke()
@@ -181,25 +181,25 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
             var point = CGPoint(x: columnXPoint(i), y: columnYPoint(i))
             point.x -= dotWidth/2.0
             point.y -= dotWidth/2.0
-            let dotPath = UIBezierPath(ovalInRect: CGRect(origin: point, size: CGSize(width: dotWidth, height: dotWidth)))
+            let dotPath = UIBezierPath(ovalIn: CGRect(origin: point, size: CGSize(width: dotWidth, height: dotWidth)))
             if pointDataItem[i] > 0.001{
                 UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1).setFill()
             }
             else{
-                UIColor.whiteColor().setFill()
+                UIColor.white.setFill()
             }
             dotPath.lineWidth = 1
             dotPath.stroke()
             dotPath.fill()
         }
     }
-    func setupInfoView(frame:CGRect){
+    func setupInfoView(_ frame:CGRect){
         
         let infoViewWidth:CGFloat = bounds.width/4
         let infoViewlHeight:CGFloat = 40
         
         let infoView = UIView(frame: CGRect(x: 0, y: 0, width: infoViewWidth, height: infoViewlHeight))
-        infoView.backgroundColor = UIColor.orangeColor()
+        infoView.backgroundColor = UIColor.orange
         infoView.layer.cornerRadius = 5
         
         let moneyLabel = UILabel(frame: CGRect(x: 0, y: 0, width: infoViewWidth, height: infoViewlHeight/2))
@@ -208,16 +208,16 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
         
         let dateLabel = UILabel(frame: CGRect(x: 0, y: infoViewlHeight/2, width: infoViewWidth/2 , height: infoViewlHeight/2))
         dateLabel.font = UIFont(name: "HelveticaNeue-Thin", size: 11)
-        dateLabel.textAlignment = .Left
+        dateLabel.textAlignment = .left
         dateLabel.text = "04月12日"
         
         let weekLabel = UILabel(frame: CGRect(x: infoViewWidth/2, y: infoViewlHeight/2, width: infoViewWidth/2, height: infoViewlHeight/2))
         weekLabel.font = UIFont(name: "HelveticaNeue-Thin", size: 11)
-        weekLabel.textAlignment = .Right
+        weekLabel.textAlignment = .right
         weekLabel.text = "星期六"
         
         let curPosLabel = UILabel(frame: CGRect(x: 10, y: infoViewlHeight, width: 2, height: self.backColumnAverHeight - infoViewlHeight))
-        curPosLabel.backgroundColor = UIColor.orangeColor()
+        curPosLabel.backgroundColor = UIColor.orange
         
         
         infoView.addSubview(moneyLabel)
@@ -229,8 +229,8 @@ class LineChartViewComponent: UIView, UIGestureRecognizerDelegate {
         self.moneyLabel = moneyLabel
         self.curPosLabel = curPosLabel
         self.infoView = infoView
-        infoView.hidden = true
-        curPosLabel.hidden = true
+        infoView.isHidden = true
+        curPosLabel.isHidden = true
         self.addSubview(infoView)
         self.addSubview(curPosLabel)
     }

@@ -9,9 +9,9 @@
 import UIKit
 
 enum AccountCellPressState:CGFloat{
-    case LongPress = 0.6
-    case Highlighted = 0.3
-    case Normal = 0.0
+    case longPress = 0.6
+    case highlighted = 0.3
+    case normal = 0.0
 }
 
 class AccountBookCell: UICollectionViewCell {

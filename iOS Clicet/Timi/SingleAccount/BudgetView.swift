@@ -9,7 +9,7 @@
 import UIKit
 
 protocol BudgetViewDelegate {
-    func pressSettingBtnWithBudgetView(budgetView:BudgetView)
+    func pressSettingBtnWithBudgetView(_ budgetView:BudgetView)
 }
 
 class BudgetView: UIView {
@@ -17,16 +17,16 @@ class BudgetView: UIView {
     var budgetViewData:BudgetData!
     var delegate:BudgetViewDelegate?
     
-    private var budgetLabel:CommonLabel!
-    private var dayLabel:CommonLabel!
-    private var costLabel:CommonLabel!
-    private var bottleBg:UIView!
-    private var waterView:UIImageView!
+    fileprivate var budgetLabel:CommonLabel!
+    fileprivate var dayLabel:CommonLabel!
+    fileprivate var costLabel:CommonLabel!
+    fileprivate var bottleBg:UIView!
+    fileprivate var waterView:UIImageView!
     
     init(frame: CGRect, data:BudgetData) {
         budgetViewData = data
         super.init(frame: frame)
-        self.backgroundColor = UIColor.whiteColor()
+        self.backgroundColor = UIColor.white
         setupViews(frame)
     }
     
@@ -34,7 +34,7 @@ class BudgetView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupViews(frame:CGRect){
+    fileprivate func setupViews(_ frame:CGRect){
         
         let mbLabelMargin:CGFloat = 50
         let mbLabelWidth:CGFloat = 40
@@ -88,11 +88,11 @@ class BudgetView: UIView {
         }
         
         let setBtn = UIButton()
-        setBtn.setBackgroundImage(UIImage(named: "button_edge"), forState: .Normal)
-        setBtn.setTitleColor(UIColor.blackColor(), forState: .Normal)
+        setBtn.setBackgroundImage(UIImage(named: "button_edge"), for: UIControlState())
+        setBtn.setTitleColor(UIColor.black, for: UIControlState())
         setBtn.titleLabel?.font = UIFont(name: "HelveticaNeue", size: 14)
-        setBtn.addTarget(self, action: #selector(BudgetView.pressSetBtn(_:)), forControlEvents: .TouchUpInside)
-        setBtn.setTitle("设置", forState: .Normal)
+        setBtn.addTarget(self, action: #selector(BudgetView.pressSetBtn(_:)), for: .touchUpInside)
+        setBtn.setTitle("设置", for: UIControlState())
         self.addSubview(setBtn)
         setBtn.snp_makeConstraints{[weak self](make) in
             if let weakSelf = self{
@@ -150,16 +150,16 @@ class BudgetView: UIView {
         }
         
     }
-    func waterAnimatedWithImage(image:UIImage, height:CGFloat){
+    func waterAnimatedWithImage(_ image:UIImage, height:CGFloat){
         waterView.image = image
         waterView.frame.origin.x = -(self.waterView.width - self.bottleBg.width)
-        UIView.animateWithDuration(1) {() -> Void in
+        UIView.animate(withDuration: 1, animations: {() -> Void in
             self.waterView.frame.origin.x = 0
             self.waterView.height = height
-        }
+        }) 
     }
     
-    func pressSetBtn(btn:UIButton) {
+    func pressSetBtn(_ btn:UIButton) {
         if let delegate = delegate{
             delegate.pressSettingBtnWithBudgetView(self)
         }

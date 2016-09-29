@@ -18,21 +18,21 @@ typealias completeRespond = (String)->()
 
 extension LimitInputView:UITextViewDelegate{
     
-    func textViewDidBeginEditing(textView: UITextView) {
+    func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == placehoder {
             textView.text = ""
-            textView.textColor = UIColor.blackColor()
+            textView.textColor = UIColor.black
         }
         textView.becomeFirstResponder()
     }
-    func textViewDidEndEditing(textView: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == "" {
             textView.text = placehoder
-            textView.textColor = UIColor.grayColor()
+            textView.textColor = UIColor.gray
         }
         textView.resignFirstResponder()
     }
-    func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n"{
             if textView.text.length > MaxLengthOfRemark{
                 let alertView = UIAlertView(title: "提示", message: "请不要超过40字", delegate: nil, cancelButtonTitle: "取消", otherButtonTitles:
@@ -50,12 +50,12 @@ extension LimitInputView:UITextViewDelegate{
         }
         return true
     }
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         if textView.text.length <= MaxLengthOfRemark{
-            characterNum?.textColor = UIColor.blackColor()
+            characterNum?.textColor = UIColor.black
         }
         else{
-            characterNum?.textColor = UIColor.redColor()
+            characterNum?.textColor = UIColor.red
         }
         currentLengthOfRemark = textView.text.length
         characterNum?.text = "\(currentLengthOfRemark!)/40"
@@ -81,31 +81,31 @@ class LimitInputView: UIView {
         let DateBarY = TopBarHeight + StatusBarHeight
         let TextFieldY = DateBarY + DateBarHeight
         //顶部栏
-        setupTopBar(CGRectMake(0, StatusBarHeight, frame.width, TopBarHeight))
+        setupTopBar(CGRect(x: 0, y: StatusBarHeight, width: frame.width, height: TopBarHeight))
         //日期
-        setupDateBar(CGRectMake(20, DateBarY, frame.width, DateBarHeight))
+        setupDateBar(CGRect(x: 20, y: DateBarY, width: frame.width, height: DateBarHeight))
         //输入区域
-        setupTextField(CGRectMake(20, TextFieldY, frame.width - 40, TextFieldHeight))
+        setupTextField(CGRect(x: 20, y: TextFieldY, width: frame.width - 40, height: TextFieldHeight))
     }
     override func layoutSubviews() {
         super.layoutSubviews()
         self.dateLabel?.text = initViewDate
     }
     
-    private func setupTopBar(frame:CGRect){
+    fileprivate func setupTopBar(_ frame:CGRect){
         //topbar
         let topBar = UIView(frame: frame)
         //返回按钮
-        let topBarBack = UIButton(frame: CGRectMake(20, 10, 22, 22))
-        topBarBack.setImage(UIImage(named: "back_light"), forState: UIControlState.Normal)
-        topBarBack.addTarget(self, action: #selector(LimitInputView.back(_:)), forControlEvents: .TouchUpInside)
+        let topBarBack = UIButton(frame: CGRect(x: 20, y: 10, width: 22, height: 22))
+        topBarBack.setImage(UIImage(named: "back_light"), for: UIControlState())
+        topBarBack.addTarget(self, action: #selector(LimitInputView.back(_:)), for: .touchUpInside)
         //中间标题
-        let title = UILabel(frame: CGRectMake(0, 0, 50, 40))
+        let title = UILabel(frame: CGRect(x: 0, y: 0, width: 50, height: 40))
         title.text = "备注"
-        title.center = CGPointMake(frame.width / 2, 20)
+        title.center = CGPoint(x: frame.width / 2, y: 20)
         
         //分割线
-        let topBarSepLine = UIView(frame: CGRectMake(0, frame.height - 0.5, frame.width, 0.5))
+        let topBarSepLine = UIView(frame: CGRect(x: 0, y: frame.height - 0.5, width: frame.width, height: 0.5))
         topBarSepLine.backgroundColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 0.7)
         
         //添加子view
@@ -114,23 +114,23 @@ class LimitInputView: UIView {
         topBar.addSubview(topBarSepLine)
         self.addSubview(topBar)
     }
-    private func setupDateBar(frame:CGRect){
+    fileprivate func setupDateBar(_ frame:CGRect){
         let dateLabel = UILabel(frame: frame)
         dateLabel.textColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
         dateLabel.font = UIFont(name: "Courier", size: 14)
         self.dateLabel = dateLabel
         self.addSubview(dateLabel)
     }
-    private func setupTextField(frame:CGRect){
+    fileprivate func setupTextField(_ frame:CGRect){
         let textInput = UITextView(frame: frame)
         textInput.font = UIFont(name: "Arial", size: 20)
-        textInput.keyboardType = .Default
-        textInput.returnKeyType = .Done
+        textInput.keyboardType = .default
+        textInput.returnKeyType = .done
         textInput.text = placehoder
         textInput.textColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
         textInput.delegate = self;
         self.textInput = textInput
-        let characterNum = UILabel(frame: CGRectMake(10, self.frame.height - 60, 80, 40))
+        let characterNum = UILabel(frame: CGRect(x: 10, y: self.frame.height - 60, width: 80, height: 40))
         characterNum.text = "0/40"
         self.characterNum = characterNum
         self.addSubview(characterNum)
@@ -138,8 +138,8 @@ class LimitInputView: UIView {
     }
     
     //MARK: - action
-    func back(sender:AnyObject){
-        if delegate?.respondsToSelector(#selector(LimitInputView.back(_:))) != nil{
+    func back(_ sender:AnyObject){
+        if delegate?.responds(to: #selector(LimitInputView.back(_:))) != nil{
             delegate?.clickBack()
         }
     }

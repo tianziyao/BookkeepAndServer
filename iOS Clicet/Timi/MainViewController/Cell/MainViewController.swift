@@ -35,7 +35,7 @@ class MainViewController: UIViewController {
         setupOperateAccountBookView()
         mainButtonAddTap()
     }
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         //更新数据
         mainVCModel.reloadModelData()
         //更新页面
@@ -43,8 +43,8 @@ class MainViewController: UIViewController {
     }
     
     func mainButtonAddTap() {
-        mainView.icon.addTarget(self, action: #selector(MainViewController.presentToLoginVC), forControlEvents: .TouchUpInside)
-        mainView.upload.addTarget(self, action: #selector(MainViewController.upload), forControlEvents: .TouchUpInside)
+        mainView.icon.addTarget(self, action: #selector(MainViewController.presentToLoginVC), for: .touchUpInside)
+        mainView.upload.addTarget(self, action: #selector(MainViewController.upload), for: .touchUpInside)
     }
     
     ///////////////////////////////////////////////////////////////
@@ -58,37 +58,37 @@ class MainViewController: UIViewController {
             datas.append(data!)
         }
         
-        let json = try? NSJSONSerialization.dataWithJSONObject(datas, options: .PrettyPrinted)
+        let json = try? JSONSerialization.data(withJSONObject: datas, options: .prettyPrinted)
         print("-----------\n")
         
-        let url = NSURL(string: "http://123.206.27.127/timi/upload.php")
+        let url = URL(string: "http://123.206.27.127/timi/upload.php")
         //let url = NSURL(string: "http://localhost:8888/i/timi/upload.php")
         
-        let request = NSMutableURLRequest(URL: url!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: url!)
+        request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPBody = json
+        request.httpBody = json
         
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request) { (data, resp, error) in
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, resp, error) in
             if error != nil {
                 print(error?.localizedDescription)
             }
             else {
-                let str = String(data: data!, encoding: NSUTF8StringEncoding)
+                let str = String(data: data!, encoding: String.Encoding.utf8)
                 if str == "写入成功" {
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.clearAllNotice()
                         self.noticeSuccess("上传成功", autoClear: true, autoClearTime: 2)
                     })
                 }
                 else {
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         self.clearAllNotice()
                         self.noticeSuccess("上传失败", autoClear: true, autoClearTime: 2)
                     })
                 }
             }
-        }
+        }) 
         
         task.resume()
     }
@@ -96,65 +96,65 @@ class MainViewController: UIViewController {
     func presentToLoginVC() {
         print("presentToLoginVC")
         let storyBoard = UIStoryboard(name: "Login", bundle: nil)
-        let loginVC = storyBoard.instantiateViewControllerWithIdentifier("Login")
+        let loginVC = storyBoard.instantiateViewController(withIdentifier: "Login")
         print(self.navigationController)
-        self.navigationController?.presentViewController(loginVC, animated: true, completion: nil)
+        self.navigationController?.present(loginVC, animated: true, completion: nil)
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     //MARK: - longPress
-    func longPressAction(sender:UILongPressGestureRecognizer){
-        let point = sender.locationInView(mainView.accountBookBtnView)
-        let indexPath = mainView.accountBookBtnView.indexPathForItemAtPoint(point)
+    func longPressAction(_ sender:UILongPressGestureRecognizer){
+        let point = sender.location(in: mainView.accountBookBtnView)
+        let indexPath = mainView.accountBookBtnView.indexPathForItem(at: point)
         if let indexPath = indexPath{
-            let cellCount = mainView.accountBookBtnView.numberOfItemsInSection(indexPath.section) ?? 0
-            let cell = mainView.accountBookBtnView.cellForItemAtIndexPath(indexPath) as! AccountBookCell
+            let cellCount = mainView.accountBookBtnView.numberOfItems(inSection: (indexPath as NSIndexPath).section) ?? 0
+            let cell = mainView.accountBookBtnView.cellForItem(at: indexPath) as! AccountBookCell
             //最后一个cell是加号，不用做长按处理
-            if indexPath.row < cellCount - 1{
-                if sender.state == .Began{
-                    let item = mainVCModel.getItemInfoAtIndex(indexPath.row)
+            if (indexPath as NSIndexPath).row < cellCount - 1{
+                if sender.state == .began{
+                    let item = mainVCModel.getItemInfoAtIndex((indexPath as NSIndexPath).row)
                     let title = item?.btnTitle ?? ""
-                    cell.highlightedViewAlpha = AccountCellPressState.LongPress.rawValue
+                    cell.highlightedViewAlpha = AccountCellPressState.longPress.rawValue
                     //弹出修改的按钮
                     operateAccountBook.showBtnAnimation()
                     operateAccountBook.cancelBlock = {[weak self] in
                         if let strongSelf = self{
                             strongSelf.operateAccountBook.hideBtnAnimation()
-                            cell.highlightedView.alpha = AccountCellPressState.Normal.rawValue
+                            cell.highlightedView.alpha = AccountCellPressState.normal.rawValue
                         }
                     }
                     operateAccountBook.deleteBlock = {[weak self] in
                         if let strongSelf = self{
-                            let alert = UIAlertController(title: "删除\(title)", message: "将会删除所有数据，不会恢复", preferredStyle: .Alert)
-                            alert.addAction(UIAlertAction(title: "取消", style: .Cancel, handler: nil))
-                            alert.addAction(UIAlertAction(title: "确定", style: .Default, handler: {(action) in
+                            let alert = UIAlertController(title: "删除\(title)", message: "将会删除所有数据，不会恢复", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+                            alert.addAction(UIAlertAction(title: "确定", style: .default, handler: {(action) in
                                 //删除数据源
-                                strongSelf.mainVCModel.removeBookItemAtIndex(indexPath.row)
+                                strongSelf.mainVCModel.removeBookItemAtIndex((indexPath as NSIndexPath).row)
                                 //执行删除操作
-                                strongSelf.mainView.accountBookBtnView.deleteItemsAtIndexPaths([indexPath])
+                                strongSelf.mainView.accountBookBtnView.deleteItems(at: [indexPath])
                                 strongSelf.operateAccountBook.hideBtnAnimation()
-                                cell.highlightedView.alpha = AccountCellPressState.Normal.rawValue
+                                cell.highlightedView.alpha = AccountCellPressState.normal.rawValue
                             }))
-                            strongSelf.presentViewController(alert, animated: true, completion: nil)
+                            strongSelf.present(alert, animated: true, completion: nil)
                         }
                     }
                     operateAccountBook.editBlock = {[weak self] in
                         if let strongSelf = self{
                             strongSelf.editAccountBook(item, indexPath:indexPath){ (title, imageName) in
                                 
-                                if let editItem = strongSelf.mainVCModel.getItemInfoAtIndex(indexPath.row){
+                                if let editItem = strongSelf.mainVCModel.getItemInfoAtIndex((indexPath as NSIndexPath).row){
                                     editItem.btnTitle = title
                                     editItem.backgrountImageName = imageName
-                                    strongSelf.mainVCModel.updateBookItem(editItem, atIndex:indexPath.row)
-                                    strongSelf.mainView.accountBookBtnView.reloadItemsAtIndexPaths([indexPath])
+                                    strongSelf.mainVCModel.updateBookItem(editItem, atIndex:(indexPath as NSIndexPath).row)
+                                    strongSelf.mainView.accountBookBtnView.reloadItems(at: [indexPath])
                                     strongSelf.operateAccountBook.hideBtnAnimation()
                                 }
                                 //退出alertview
                                 strongSelf.customAlertView.removeFromSuperview()
                             }
-                            cell.highlightedView.alpha = AccountCellPressState.Normal.rawValue
+                            cell.highlightedView.alpha = AccountCellPressState.normal.rawValue
                         }
                         
                     }
@@ -163,7 +163,7 @@ class MainViewController: UIViewController {
         }
     }
     
-    func editAccountBook(item:AccountBookBtn?, indexPath:NSIndexPath, sureBlock:(String, String)->Void){
+    func editAccountBook(_ item:AccountBookBtn?, indexPath:IndexPath, sureBlock:@escaping (String, String)->Void){
         customAlertView.title = item?.btnTitle ?? ""
         customAlertView.initChooseImage = item?.backgrountImageName ?? "book_cover_0"
         customAlertView.cancelBlock = {[weak self] in
@@ -172,24 +172,24 @@ class MainViewController: UIViewController {
             }
         }
         customAlertView.sureBlock = sureBlock
-        UIApplication.sharedApplication().keyWindow?.addSubview(self.customAlertView)
+        UIApplication.shared.keyWindow?.addSubview(self.customAlertView)
     }
     
     //MARK: - setup views(private)
     //建立主页面
-    private func setupMainView(){
-        let mainViewFrame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+    fileprivate func setupMainView(){
+        let mainViewFrame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         let mainView = MainView(frame: mainViewFrame, delegate:self)
         self.mainView = mainView
         self.view.addSubview(mainView)
     }
-    private func setupCustomAlertView(){
-        let frame = CGRectMake(0, 0, self.view.frame.width, self.view.frame.height)
+    fileprivate func setupCustomAlertView(){
+        let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         let customAlertView = CustomAlertView(frame: frame)
         self.customAlertView = customAlertView
     }
-    private func setupOperateAccountBookView(){
-        let frame = CGRectMake(0, 0, self.view.bounds.width, self.view.bounds.height)
+    fileprivate func setupOperateAccountBookView(){
+        let frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height)
         let operateAccountBook = OperateAccountBookView(frame: frame)
         self.operateAccountBook = operateAccountBook
         self.view.addSubview(operateAccountBook)
@@ -198,10 +198,10 @@ class MainViewController: UIViewController {
 //MARK: - UICollectionViewDelegate
 extension MainViewController:UICollectionViewDelegate{
     //MARK: - selected cell
-    func collectionView(collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AccountBookCell
-        let cellCount = collectionView.numberOfItemsInSection(indexPath.section)
-        if indexPath.row == cellCount - 1{
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        let cell = collectionView.cellForItem(at: indexPath) as! AccountBookCell
+        let cellCount = collectionView.numberOfItems(inSection: (indexPath as NSIndexPath).section)
+        if (indexPath as NSIndexPath).row == cellCount - 1{
             return false
         }
         else{
@@ -214,38 +214,38 @@ extension MainViewController:UICollectionViewDelegate{
         }
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        mainVCModel.showFlagWithIndex(indexPath.row)
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        mainVCModel.showFlagWithIndex((indexPath as NSIndexPath).row)
         mainView.reloadCollectionView()
     }
     //MARK: - highlighted cell
-    func collectionView(collectionView: UICollectionView, shouldHighlightItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    func collectionView(collectionView: UICollectionView, didHighlightItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AccountBookCell
-        cell.highlightedViewAlpha = AccountCellPressState.Highlighted.rawValue
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! AccountBookCell
+        cell.highlightedViewAlpha = AccountCellPressState.highlighted.rawValue
     }
     
-    func collectionView(collectionView: UICollectionView, didUnhighlightItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! AccountBookCell
+    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! AccountBookCell
         //浮点数没法精确，所以只能用小于
-        if cell.highlightedViewAlpha <= AccountCellPressState.Highlighted.rawValue + 0.1{
-            cell.highlightedViewAlpha = AccountCellPressState.Normal.rawValue
+        if cell.highlightedViewAlpha <= AccountCellPressState.highlighted.rawValue + 0.1{
+            cell.highlightedViewAlpha = AccountCellPressState.normal.rawValue
             
-            let cellCount = collectionView.numberOfItemsInSection(indexPath.section)
-            if indexPath.row == cellCount - 1{
+            let cellCount = collectionView.numberOfItems(inSection: (indexPath as NSIndexPath).section)
+            if (indexPath as NSIndexPath).row == cellCount - 1{
                 
                 editAccountBook(nil, indexPath: indexPath){[weak self](title, imageName) in
                     if let strongSelf = self{
                         //建一个数据库
-                        let currentTime = Int(NSDate().timeIntervalSince1970)
+                        let currentTime = Int(Date().timeIntervalSince1970)
                         let dbName = customAccountName + "\(currentTime)" + ".db"
                         let item = AccountBookBtn(title: title, count: "0笔", image: imageName, flag: false, dbName: dbName)
                         //插入账本
                         strongSelf.mainVCModel.addBookItemByAppend(item)
-                        strongSelf.mainView.accountBookBtnView.insertItemsAtIndexPaths([indexPath])
+                        strongSelf.mainView.accountBookBtnView.insertItems(at: [indexPath])
                         //退出alertview
                         strongSelf.customAlertView.removeFromSuperview()
                     }
@@ -253,11 +253,11 @@ extension MainViewController:UICollectionViewDelegate{
             }
             else{
                 //切换到contentView
-                if let item = mainVCModel.getItemInfoAtIndex(indexPath.row){
+                if let item = mainVCModel.getItemInfoAtIndex((indexPath as NSIndexPath).row){
                     let singleAccountModel = SingleAccountModel(initDBName: item.dataBaseName, accountTitle: item.btnTitle)
                     let tmpSingleAccountVC = SingleAccountVC(model: singleAccountModel)
                     self.sideMenuViewController.setContentViewController(tmpSingleAccountVC, animated: true)
-                    self.sideMenuViewController.hideMenuViewController()
+                    self.sideMenuViewController.hideViewController()
                 }
             }
         }
@@ -265,15 +265,15 @@ extension MainViewController:UICollectionViewDelegate{
 }
 //MARK: - UICollectionViewDataSource
 extension MainViewController:UICollectionViewDataSource{
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return mainVCModel.accountsBtns.count
     }
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("AccountBookBtnCell", forIndexPath: indexPath) as! AccountBookCell
-        let cellData = mainVCModel.accountsBtns[indexPath.row]
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AccountBookBtnCell", for: indexPath) as! AccountBookCell
+        let cellData = mainVCModel.accountsBtns[(indexPath as NSIndexPath).row]
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(MainViewController.longPressAction(_:)))
         longPress.cancelsTouchesInView = false
         cell.addGestureRecognizer(longPress)

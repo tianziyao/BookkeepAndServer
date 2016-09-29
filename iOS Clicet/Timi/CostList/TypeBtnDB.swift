@@ -31,9 +31,9 @@ class TypeBtnDB: NSObject {
         let btnPath = String.createFilePathInDocumentWith("DatabaseDoc/TypeBtn.db") ?? ""
         
         //创建filemanager
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         //不存在要创建的文件则进入创建操作
-        if fileManager.fileExistsAtPath(btnPath) == false {
+        if fileManager.fileExists(atPath: btnPath) == false {
             //创建.db文件
             let db = FMDatabase(path: btnPath)
             //判断是否创建成功
@@ -59,43 +59,43 @@ class TypeBtnDB: NSObject {
         return FMDatabase(path: btnPath)
     }
     //插入数据
-    class func insertData(item:btnModel){
+    class func insertData(_ item:btnModel){
         let sql_stmt = "INSERT INTO btnDB(ID, IMAGENAME, ICONTITLE) VALUES(?,?,?)"
         let db = self.getDB()
         db.open()
-        db.executeUpdate(sql_stmt, withArgumentsInArray: [item.ID,item.imageName, item.iconTitle])
+        db.executeUpdate(sql_stmt, withArgumentsIn: [item.ID,item.imageName, item.iconTitle])
         db.close()
     }
     
     //更新数据
-    class func updateData(item:btnModel){
+    class func updateData(_ item:btnModel){
         let sql_stmt = "UPDATE btnDB SET IMAGENAME=?, ICONTITLE=? WHERE ID=?"
         let db = self.getDB()
         db.open()
-        db.executeUpdate(sql_stmt, withArgumentsInArray: [item.imageName, item.iconTitle, item.ID])
+        db.executeUpdate(sql_stmt, withArgumentsIn: [item.imageName, item.iconTitle, item.ID])
         db.close()
     }
     
     //删除数据
-    class func deleteData(item:btnModel){
+    class func deleteData(_ item:btnModel){
         let sql_stmt = "DELETE FROM btnDB WHERE ID=?"
         let db = self.getDB()
         db.open()
-        db.executeUpdate(sql_stmt, withArgumentsInArray: [item.ID])
+        db.executeUpdate(sql_stmt, withArgumentsIn: [item.ID])
         db.close()
     }
     
     //查询数据
-    class func selectData(id:Int)->btnModel{
+    class func selectData(_ id:Int)->btnModel{
         let sql_stmt = "SELECT * FROM btnDB WHERE ID=?"
         let db = self.getDB()
         db.open()
-        let rs = db.executeQuery(sql_stmt, withArgumentsInArray: [id])
+        let rs = db.executeQuery(sql_stmt, withArgumentsIn: [id])
         let item = btnModel(ID: 1, imageName: "", iconTitle: "")
-        while rs.next(){
-            item.ID = Int(rs.intForColumn("ID"))
-            item.imageName = rs.stringForColumn("IMAGENAME")
-            item.iconTitle = rs.stringForColumn("ICONTITLE")
+        while (rs?.next())!{
+            item.ID = Int((rs?.int(forColumn: "ID"))!)
+            item.imageName = rs!.string(forColumn: "IMAGENAME") as NSString
+            item.iconTitle = rs!.string(forColumn: "ICONTITLE") as NSString
         }
         db.close()
         return item
