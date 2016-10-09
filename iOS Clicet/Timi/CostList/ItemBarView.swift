@@ -147,7 +147,7 @@ class ItemBarView: UIView {
         db.open()
         let DBItemCount = db.intForQuery("SELECT COUNT(ID) FROM btnDB")
         db.close()
-        for i in 0 ..< Int(DBItemCount) {
+        for i in 0 ..< Int(DBItemCount!) {
             let item = TypeBtnDB.selectData(i)
             self.items.append(item)
         }

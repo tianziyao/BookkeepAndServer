@@ -124,8 +124,8 @@ class ComputeBoardView: UIView {
     
     func shakeCostBarMoney(){
         let shakeAnimation = CAKeyframeAnimation(keyPath: "position.x")
-        shakeAnimation.values = [0, 10, -10, 10, 0]
-        shakeAnimation.keyTimes = [0, 1/6.0, 3/6.0, 5/6.0, 1]
+        shakeAnimation.values = [0, 10, -10, 10, 0]        
+        shakeAnimation.keyTimes = [0, NSNumber(value: 1/6.0), NSNumber(value: 3/6.0), NSNumber(value: 5/6.0), 1]
         shakeAnimation.duration = 0.4
         shakeAnimation.isAdditive = true
         costBarMoney.layer.add(shakeAnimation, forKey: "CostBarMoneyShake")

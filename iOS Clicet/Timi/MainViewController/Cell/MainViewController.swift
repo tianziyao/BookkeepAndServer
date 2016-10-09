@@ -69,7 +69,7 @@ class MainViewController: UIViewController {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = json
         
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, resp, error) in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { (data, resp, error) in
             if error != nil {
                 print(error?.localizedDescription)
             }
@@ -109,7 +109,7 @@ class MainViewController: UIViewController {
         let point = sender.location(in: mainView.accountBookBtnView)
         let indexPath = mainView.accountBookBtnView.indexPathForItem(at: point)
         if let indexPath = indexPath{
-            let cellCount = mainView.accountBookBtnView.numberOfItems(inSection: (indexPath as NSIndexPath).section) ?? 0
+            let cellCount = mainView.accountBookBtnView.numberOfItems(inSection: (indexPath as NSIndexPath).section) 
             let cell = mainView.accountBookBtnView.cellForItem(at: indexPath) as! AccountBookCell
             //最后一个cell是加号，不用做长按处理
             if (indexPath as NSIndexPath).row < cellCount - 1{

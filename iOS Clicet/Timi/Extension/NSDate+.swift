@@ -16,7 +16,7 @@ extension Date{
         let currentDate = "\(calCom.year)年\(calCom.month)月\(calCom.day)日"
         return currentDate
     }
-    static func intervalToDateComponent(_ interval:TimeInterval) -> DateComponents{
+    static func intervalToDateComponent(_ interval:TimeInterval) -> DateComponents {
         let date = Date(timeIntervalSince1970: interval)
         return dateToDateComponent(date)
     }

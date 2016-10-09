@@ -262,7 +262,7 @@ extension UIColor {
         let b = CGFloat((number >>  0) & 0xFF) / 255
         let g = CGFloat((number >>  8) & 0xFF) / 255
         let r = CGFloat((number >> 16) & 0xFF) / 255
-        let a = (<#T##String.CharacterView corresponding to `start`##String.CharacterView#>.distance(from: start, to: end)) > 6 ? CGFloat((number >> 24) & 0xFF) / 255 : 1
+        let a = number > 0xFFFFFF ? CGFloat((number >> 24) & 0xFF) / 255 : 1.0
         
         self.init(red: r, green: g, blue: b, alpha: a)
     }

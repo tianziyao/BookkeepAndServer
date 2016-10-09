@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-extension UIViewController {
+extension UIResponder {
     /// wait with your own animated images
     func pleaseWaitWithImages(_ imageNames: Array<UIImage>, timeInterval: Int) {
         SwiftNotice.wait(imageNames, timeInterval: timeInterval)
@@ -66,20 +66,12 @@ class SwiftNotice: NSObject {
     static let rv = UIApplication.shared.keyWindow?.subviews.first as UIView!
     static var timer: DispatchSource!
     static var timerTimes = 0
+    
+    /* just for iOS 8
+     */
     static var degree: Double {
         get {
             return [0, 0, 180, 270, 90][UIApplication.shared.statusBarOrientation.hashValue] as Double
-        }
-    }
-    static var center: CGPoint {
-        get {
-            var array = [UIScreen.main.bounds.width, UIScreen.main.bounds.height]
-            array = array.sorted(by: <)
-            let screenWidth = array[0]
-            let screenHeight = array[1]
-            let x = [0, screenWidth/2, screenWidth/2, 10, screenWidth-10][UIApplication.shared.statusBarOrientation.hashValue] as CGFloat
-            let y = [0, 10, screenHeight-10, screenHeight/2, screenHeight/2][UIApplication.shared.statusBarOrientation.hashValue] as CGFloat
-            return CGPoint(x: x, y: y)
         }
     }
     
@@ -112,11 +104,23 @@ class SwiftNotice: NSObject {
         window.frame = frame
         view.frame = frame
         
+        if let version = Double(UIDevice.current.systemVersion),
+            version < 9.0 {
+            // change center
+            var array = [UIScreen.main.bounds.width, UIScreen.main.bounds.height]
+            array = array.sorted(by: <)
+            let screenWidth = array[0]
+            let screenHeight = array[1]
+            let x = [0, screenWidth/2, screenWidth/2, 10, screenWidth-10][UIApplication.shared.statusBarOrientation.hashValue] as CGFloat
+            let y = [0, 10, screenHeight-10, screenHeight/2, screenHeight/2][UIApplication.shared.statusBarOrientation.hashValue] as CGFloat
+            window.center = CGPoint(x: x, y: y)
+            
+            // change direction
+            window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
+        }
+        
         window.windowLevel = UIWindowLevelStatusBar
         window.isHidden = false
-        // change orientation
-        window.center = center
-        window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
         window.addSubview(view)
         windows.append(window)
         
@@ -139,8 +143,8 @@ class SwiftNotice: NSObject {
                 iv.image = imageNames.first!
                 iv.contentMode = UIViewContentMode.scaleAspectFit
                 mainView.addSubview(iv)
-                timer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: DispatchQueue.main) /*Migrator FIXME: Use DispatchSourceTimer to avoid the cast*/ as! DispatchSource
-                timer.setTimer(start: DispatchTime.now(), interval: UInt64(timeInterval) * NSEC_PER_MSEC, leeway: 0)
+                timer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: DispatchQueue.main) as! DispatchSource
+                timer.scheduleRepeating(deadline: DispatchTime.now(), interval: DispatchTimeInterval.milliseconds(timeInterval))
                 timer.setEventHandler(handler: { () -> Void in
                     let name = imageNames[timerTimes % imageNames.count]
                     iv.image = name
@@ -157,11 +161,17 @@ class SwiftNotice: NSObject {
         
         window.frame = frame
         mainView.frame = frame
+        window.center = rv!.center
+        
+        if let version = Double(UIDevice.current.systemVersion),
+            version < 9.0 {
+            // change center
+            window.center = getRealCenter()
+            // change direction
+            window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
+        }
         
         window.windowLevel = UIWindowLevelAlert
-        window.center = getRealCenter()
-        // change orientation
-        window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
         window.isHidden = false
         window.addSubview(mainView)
         windows.append(window)
@@ -187,11 +197,17 @@ class SwiftNotice: NSObject {
         mainView.frame = superFrame
         
         label.center = mainView.center
+        window.center = rv!.center
+        
+        if let version = Double(UIDevice.current.systemVersion),
+            version < 9.0 {
+            // change center
+            window.center = getRealCenter()
+            // change direction
+            window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
+        }
         
         window.windowLevel = UIWindowLevelAlert
-        window.center = getRealCenter()
-        // change orientation
-        window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
         window.isHidden = false
         window.addSubview(mainView)
         windows.append(window)
@@ -227,11 +243,18 @@ class SwiftNotice: NSObject {
         
         window.frame = frame
         mainView.frame = frame
+        window.center = rv!.center
+        
+        if let version = Double(UIDevice.current.systemVersion),
+            version < 9.0 {
+            // change center
+            window.center = getRealCenter()
+            // change direction
+            window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
+        }
         
         window.windowLevel = UIWindowLevelAlert
-        window.center = getRealCenter()
-        // change orientation
-        window.transform = CGAffineTransform(rotationAngle: CGFloat(degree * M_PI / 180))
+        window.center = rv!.center
         window.isHidden = false
         window.addSubview(mainView)
         windows.append(window)
@@ -253,7 +276,7 @@ class SwiftNotice: NSObject {
         }
     }
     
-    // fix orientation problem
+    // just for iOS 8
     static func getRealCenter() -> CGPoint {
         if UIApplication.shared.statusBarOrientation.hashValue >= 3 {
             return CGPoint(x: rv!.center.y, y: rv!.center.x)

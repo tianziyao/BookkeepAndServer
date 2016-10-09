@@ -54,7 +54,7 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
         request.httpMethod = "POST"
         request.httpBody = userInfo.data(using: String.Encoding.utf8)
         
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, resp, error) in
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler: { (data, resp, error) in
             let result = (String(data: data!, encoding: String.Encoding.utf8))
             if result == "注册成功" {
                 DispatchQueue.main.async(execute: {
@@ -68,17 +68,17 @@ class RegTableViewController: UITableViewController, RESideMenuDelegate{
                     let homeVC = SingleAccountVC(model: singleAccountModel)
                     let sideMenu = RESideMenu.init(contentViewController: homeVC, leftMenuViewController: leftMenuVC, rightMenuViewController: nil)
                     let ScreenWithRatio = UIScreen.main.bounds.width / 375
-                    sideMenu.delegate = self
-                    sideMenu.contentViewInPortraitOffsetCenterX = 150 * ScreenWithRatio
-                    sideMenu.contentViewShadowEnabled = true
-                    sideMenu.contentViewShadowOffset = CGSize(width: -2, height: -2)
-                    sideMenu.contentViewShadowColor = UIColor.black
-                    sideMenu.scaleContentView = false
-                    sideMenu.scaleMenuView = false
-                    sideMenu.fadeMenuView = false
+                    sideMenu?.delegate = self
+                    sideMenu?.contentViewInPortraitOffsetCenterX = 150 * ScreenWithRatio
+                    sideMenu?.contentViewShadowEnabled = true
+                    sideMenu?.contentViewShadowOffset = CGSize(width: -2, height: -2)
+                    sideMenu?.contentViewShadowColor = UIColor.black
+                    sideMenu?.scaleContentView = false
+                    sideMenu?.scaleMenuView = false
+                    sideMenu?.fadeMenuView = false
                     
                     //MainView().title.text = self.userNameInput.text!
-                    self.navigationController?.present(sideMenu, animated: true, completion: nil)
+                    self.navigationController?.present(sideMenu!, animated: true, completion: nil)
                 })
             }
             else if result == "用户名已存在" {

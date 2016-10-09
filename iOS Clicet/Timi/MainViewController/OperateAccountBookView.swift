@@ -83,7 +83,8 @@ class OperateAccountBookView: UIView {
     }
     fileprivate func generateBtn(_ index:Int , title:String, imageName:String, action:Selector)->UIView {
         let btnY = 12 * ScreenWidthRatio + BgViewHeight
-        let bgWidth = (frame.width - 25.6 * ScreenWidthRatio - 2 * AllBtnMarginLeft - 2 * BtnMarginRight) / 3
+        let width = frame.width - 25.6 * ScreenWidthRatio - 2 * AllBtnMarginLeft - 2 * BtnMarginRight
+        let bgWidth = width / 3
         let offsetX = AllBtnMarginLeft + (bgWidth + BtnMarginRight) * CGFloat(index)
         let bgHeight = (bgWidth / 2) * 3 + 10 * ScreenWidthRatio
         

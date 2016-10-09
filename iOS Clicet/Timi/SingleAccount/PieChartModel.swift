@@ -232,7 +232,7 @@ class PieChartModel: NSObject {
                 let compRef = (Calendar.current as NSCalendar).components([.year, .month, .day, .weekday], from: firstDateOfMonth)
                 var money:Float = 0.0
                 let date = "\(compRef.month)月\(compRef.day)日"
-                let week = "星期\(weekChinese[compRef.weekday - 1])"
+                let week = "星期\(weekChinese[compRef.weekday! - 1])"
                 
                 if let item = monthDic[month]{
                     let reverseItem = item.reversed()

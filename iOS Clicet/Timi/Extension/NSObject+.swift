@@ -50,15 +50,28 @@ extension NSObject{
 class HEFoundation {
     
     static let set = NSSet(array: [
-        URL.classForCoder(),
-        Date.classForCoder(),
-        NSValue.classForCoder(),
-        Data.classForCoder(),
-        NSError.classForCoder(),
-        NSArray.classForCoder(),
-        NSDictionary.classForCoder(),
-        NSString.classForCoder(),
-        NSAttributedString.classForCoder()
+        type(of: URL.self),
+        type(of: Date.self),
+        type(of: NSValue.self),
+        type(of: Data.self),
+        type(of: NSError.self),
+        type(of: NSArray.self),
+        type(of: NSDictionary.self),
+        type(of: NSString.self),
+        type(of: NSAttributedString.self)
+
+        /*
+         URL.classForCoder(),
+         Date.classForCoder(),
+         NSValue.classForCoder(),
+         Data.classForCoder(),
+         NSError.classForCoder(),
+         NSArray.classForCoder(),
+         NSDictionary.classForCoder(),
+         NSString.classForCoder(),
+         NSAttributedString.classForCoder()
+         */
+
         ])
     static let  bundlePath = Bundle.main.infoDictionary!["CFBundleExecutable"] as! String
     
